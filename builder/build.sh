@@ -5,7 +5,7 @@ set -e
 
 echo ""
 
-readonly IMAGE="cmangos/mangos-builder"
+readonly IMAGE="cmangos/builder"
 readonly VERSION="tbc"
 
 echo "  Now building a brand-new image...  "

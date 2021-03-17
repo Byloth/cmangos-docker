@@ -2,7 +2,7 @@
 #
 
 readonly NAME="mangos-runner"
-readonly IMAGE="cmangos/mangos-runner"
+readonly IMAGE="cmangos/runner"
 readonly VERSION="tbc"
 
 BASE_DIR="$(realpath "${PWD}/..")"

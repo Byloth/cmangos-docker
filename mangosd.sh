@@ -2,7 +2,7 @@
 #
 
 readonly NAME="mangosd-tbc"
-readonly IMAGE="cmangos/mangos-runner"
+readonly IMAGE="cmangos/runner"
 readonly VERSION="tbc"
 
 docker run --rm -it \

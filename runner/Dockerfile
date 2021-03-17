@@ -15,7 +15,7 @@ RUN useradd --home /home/mangos --create-home \
 
 WORKDIR /opt/mangos
 
-COPY --from=cmangos/mangos-builder:tbc /home/mangos/run /opt/mangos
+COPY --from=cmangos/builder:tbc /home/mangos/run /opt/mangos
 
 COPY entrypoint.sh /
 

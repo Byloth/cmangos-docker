@@ -2,7 +2,7 @@
 #
 
 readonly NAME="mangos-builder"
-readonly IMAGE="cmangos/mangos-builder"
+readonly IMAGE="cmangos/builder"
 readonly VERSION="tbc"
 
 BASE_DIR="$(realpath "${PWD}/..")"
