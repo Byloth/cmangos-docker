@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 AS builder
+FROM ubuntu:20.04
 
 ARG TIMEZONE="UTC"
 RUN ln -snf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime \
@@ -63,44 +63,16 @@ RUN mkdir -p /home/mangos/build \
  && cd /home/mangos/build \
  && cmake ../mangos/ -DCMAKE_INSTALL_PREFIX=../run -DBUILD_EXTRACTORS=ON \
  && make "-j${THREADS}" \
- && make install
-
-FROM ubuntu:20.04
-
-# Installing `gosu` and required shared libraries...
-#
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-        gosu \
-        libmariadb-dev \
-        libssl1.1 \
-        mariadb-client \
+ && make install \
  \
- && rm -rf /var/lib/apt/lists/* \
-           /tmp/*
+ && cd /home/mangos/run/bin/tools \
+ && chmod +x ExtractResources.sh \
+             MoveMapGen.sh
 
-# Creating `mangos:mangos` user...
-#
-RUN useradd --home /home/mangos --create-home \
-            --comment "MaNGOS" \
+RUN useradd --comment "MaNGOS" \
+            --home /home/mangos \
             --user-group mangos
 
-# Defining working directory...
-#
 WORKDIR /home/mangos
 
-# Copying files from builder...
-#
-# TODO: Are `mangos` and `tbc-db` directories really required?
-#
-COPY --from=builder /home/mangos/run /opt/mangos
-COPY --from=builder /home/mangos/mangos/sql /opt/mangos/sql
-COPY --from=builder --chown=mangos:mangos /home/mangos/tbc-db /home/mangos/tbc-db
-
-COPY entrypoint.sh /
-
-ENTRYPOINT ["/entrypoint.sh"]
-# CMD ["cmangos"]
 CMD ["bash"]
-
-EXPOSE 3443 3724 7878 8085 8086

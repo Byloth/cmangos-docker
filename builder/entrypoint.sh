@@ -5,6 +5,11 @@ set -e
 
 # Other functions:
 #
+function extract_resources_from_client()
+{
+    cd /opt/mangos/bin/tools
+}
+
 function init_db()
 {
     cd /opt/mangos/sql
@@ -34,14 +39,22 @@ function install_full_db()
 
 # Main functions:
 #
-function mangos_init()
+function init_runner()
 {
     cd /opt/mangos/etc
 
     cp mangosd.conf.dist mangosd.conf
     cp realmd.conf.dist realmd.conf
 }
-function mangos_run()
+
+function run_mangosd()
+{
+    cd /opt/mangos/bin
+
+    echo "Not implemented yet. Please, come back later."
+    exit 1
+}
+function run_realmd()
 {
     cd /opt/mangos/bin
 
@@ -53,16 +66,18 @@ function mangos_run()
 #
 echo ""
 
-mangos_init
+init_runner
 
 case "${1}" in
-    -- | mangos)
+    mangosd)
         shift
 
-        mangos_run ${@}
+        run_mangosd ${@}
         ;;
-    -*)
-        mangos_run ${@}
+    realmd)
+        shift
+
+        run_realmd ${@}
         ;;
     *)
         cd /home/mangos

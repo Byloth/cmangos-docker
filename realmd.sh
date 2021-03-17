@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
 
-readonly NAME="mangos_tbc"
-readonly IMAGE="cmangos/mangos-tbc"
-readonly VERSION="latest"
+readonly NAME="realmd-tbc"
+readonly IMAGE="cmangos/mangos-runner"
+readonly VERSION="tbc"
 
 docker run --rm -it \
            --name=${NAME} \
