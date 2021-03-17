@@ -1,0 +1,39 @@
+version: "3.9"
+services:
+  mariadb:
+    image: mariadb:10.3
+    environment:
+      MYSQL_ROOT_PASSWORD: root00
+
+    networks:
+      - database
+
+    ports:
+      - 3306:3306
+
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin:5.1
+    depends_on:
+      - mariadb
+
+    environment:
+      PMA_HOST: mariadb
+      PMA_USER: root
+      PMA_PASSWORD: root00
+
+    ports:
+      - 8080:80
+
+    networks:
+      - database
+
+networks:
+  default:
+  database:
+    external: true
+
+volumes:
+  mariadb_data:

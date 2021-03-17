@@ -1,0 +1,16 @@
+# Mounted directories as volumes
+#
+/Cameras
+/dbc
+/maps
+/mmaps
+/vmaps
+
+# IDE files
+#
+/*.code-workspace
+
+# Configuration files
+#
+/*.conf
+/*.config
