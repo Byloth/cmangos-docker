@@ -16,6 +16,7 @@ RUN ln -snf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime \
         libboost-thread-dev \
         libmariadb-dev-compat \
         libssl-dev \
+        mariadb-client \
  \
  && rm -rf /var/lib/apt/lists/* \
            /tmp/*

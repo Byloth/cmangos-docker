@@ -1,10 +1,7 @@
 # Mounted directories as volumes
 #
-/Cameras
-/dbc
-/maps
-/mmaps
-/vmaps
+/mangosd_data
+/mariadb_data
 
 # IDE files
 #
@@ -14,3 +11,7 @@
 #
 /*.conf
 /*.config
+
+# Other files
+#
+*.bat

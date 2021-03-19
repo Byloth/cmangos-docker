@@ -9,15 +9,15 @@ BASE_DIR="$(realpath "${PWD}/..")"
 
 docker run --rm -it \
            --name=${NAME} \
-           --network=database \
-           -e MANGOS_DBHOST="172.17.0.1" \
-           -e MANGOS_DBUSER="root" \
-           -e MANGOS_DBPASS="root00" \
+           --network=exposed \
+           -e CMANGOS_DBHOST="172.17.0.1" \
+           -e CMANGOS_DBUSER="root" \
+           -e CMANGOS_DBPASS="root00" \
            -v /home/matteo/downloads/wow-tbc:/home/mangos/tbc-client \
-           -v ${BASE_DIR}/Cameras:/home/mangos/run/Cameras \
-           -v ${BASE_DIR}/dbc:/home/mangos/run/dbc \
-           -v ${BASE_DIR}/maps:/home/mangos/run/maps \
-           -v ${BASE_DIR}/mmaps:/home/mangos/run/mmaps \
-           -v ${BASE_DIR}/vmaps:/home/mangos/run/vmaps \
+           -v ${BASE_DIR}/mangosd_data/Cameras:/home/mangos/data/Cameras \
+           -v ${BASE_DIR}/mangosd_data/dbc:/home/mangos/data/dbc \
+           -v ${BASE_DIR}/mangosd_data/maps:/home/mangos/data/maps \
+           -v ${BASE_DIR}/mangosd_data/mmaps:/home/mangos/data/mmaps \
+           -v ${BASE_DIR}/mangosd_data/vmaps:/home/mangos/data/vmaps \
     \
     ${IMAGE}:${VERSION} ${@}
