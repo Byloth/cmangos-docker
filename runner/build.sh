@@ -13,5 +13,6 @@ echo " ----------------------------------- "
 echo ""
 
 docker build --tag ${IMAGE}:${VERSION} \
+             --build-arg TIMEZONE="Europe/Rome" \
     \
     . # There's a `dot` on this line!

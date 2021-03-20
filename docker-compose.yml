@@ -12,50 +12,53 @@ services:
       - 3306:3306
 
     volumes:
+      - ./database:/etc/mysql/conf.d:ro
       - ./mariadb_data:/var/lib/mysql
 
-  # mangosd:
-  #   image: cmangos/runner:tbc
-  #   depends_on:
-  #     - mariadb
+  mangosd:
+    image: cmangos/runner:tbc
+    depends_on:
+      - mariadb
 
-  #   environment:
-  #     CMANGOS_DBHOST: "172.17.0.1"
-  #     CMANGOS_DBUSER: mangos
-  #     CMANGOS_DBPASS: mangos00
+    environment:
+      MANGOS_DBHOST: "172.17.0.1"
+      MANGOS_DBUSER: mangos
+      MANGOS_DBPASS: mangos00
 
-  #   command: mangosd
-  #   networks:
-  #     - default
-  #     - exposed
+    command: mangosd
+    tty: true
+    networks:
+      - default
+      - exposed
 
-  #   ports:
-  #     - 8085:8085
+    ports:
+      - 8085:8085
 
-  #   volumes:
-  #     - ./mangosd_data/Cameras:/opt/mangos/data/Cameras:ro
-  #     - ./mangosd_data/dbc:/opt/mangos/data/dbc:ro
-  #     - ./mangosd_data/maps:/opt/mangos/data/maps:ro
-  #     - ./mangosd_data/mmaps:/opt/mangos/data/mmaps:ro
-  #     - ./mangosd_data/vmaps:/opt/mangos/data/vmaps:ro
+    volumes:
+      - ./runner/config:/opt/mangos/conf:ro
+      - ./mangosd_data/Cameras:/opt/mangos/data/Cameras:ro
+      - ./mangosd_data/dbc:/opt/mangos/data/dbc:ro
+      - ./mangosd_data/maps:/opt/mangos/data/maps:ro
+      - ./mangosd_data/mmaps:/opt/mangos/data/mmaps:ro
+      - ./mangosd_data/vmaps:/opt/mangos/data/vmaps:ro
 
-  # realmd:
-  #   image: cmangos/runner:tbc
-  #   depends_on:
-  #     - mariadb
+  realmd:
+    image: cmangos/runner:tbc
+    depends_on:
+      - mariadb
 
-  #   environment:
-  #     CMANGOS_DBHOST: "172.17.0.1"
-  #     CMANGOS_DBUSER: mangos
-  #     CMANGOS_DBPASS: mangos00
+    environment:
+      MANGOS_DBHOST: "172.17.0.1"
+      MANGOS_DBUSER: mangos
+      MANGOS_DBPASS: mangos00
 
-  #   command: realmd
-  #   networks:
-  #     - default
-  #     - exposed
+    command: realmd
+    networks:
+      - default
+      - exposed
 
-  #   ports:
-  #     - 3724:3724
+    ports:
+      - 3724:3724
 
   phpmyadmin:
     image: phpmyadmin:5.1

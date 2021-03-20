@@ -1,10 +1,15 @@
 FROM ubuntu:20.04
 
+ENV DEBIAN_FRONTEND="noninteractive"
+
 ARG TIMEZONE="UTC"
-RUN ln -snf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime \
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+        tzdata \
+ && ln -snf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime \
  && echo "${TIMEZONE}" > /etc/timezone \
+ && dpkg-reconfigure --frontend noninteractive tzdata \
  \
- && apt-get update \
  && apt-get install -y --no-install-recommends \
         build-essential \
         cmake \
