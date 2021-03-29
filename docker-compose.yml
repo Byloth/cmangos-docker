@@ -21,11 +21,12 @@ services:
       - mariadb
 
     environment:
-      MANGOS_DBHOST: "172.17.0.1"
+      MANGOS_DBHOST: mariadb
       MANGOS_DBUSER: mangos
       MANGOS_DBPASS: mangos00
 
     command: mangosd
+    stdin_open: true
     tty: true
     networks:
       - default
@@ -48,7 +49,7 @@ services:
       - mariadb
 
     environment:
-      MANGOS_DBHOST: "172.17.0.1"
+      MANGOS_DBHOST: mariadb
       MANGOS_DBUSER: mangos
       MANGOS_DBPASS: mangos00
 
