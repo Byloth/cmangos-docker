@@ -26,8 +26,8 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* \
            /tmp/*
 
-ARG MANGOS_TBC_SHA1="168d2ff3437b395b2b52a45c3824d06d8c588af2"
-ARG TBC_DB_SHA1="a70165a80d23fe4917f91212dc8e399fb68d9cdd"
+ARG MANGOS_TBC_SHA1="8ebaeb8bae1d4a04229d7f2b04c3f129c1b0a643"
+ARG TBC_DB_SHA1="7623ad991bd4275ea35fe315c1552f5d6cc8df71"
 RUN mkdir -p /home/mangos/mangos \
              /home/mangos/tbc-db \
  \
@@ -81,4 +81,17 @@ RUN useradd --comment "MaNGOS" \
 
 WORKDIR /home/mangos
 
+ENV MANGOS_DBHOST="127.0.0.1" \
+    MANGOS_DBPORT="3306" \
+    MANGOS_DBUSER="root" \
+    MANGOS_DBPASS="" \
+    \
+    MANGOS_REALMD_DBNAME="tbcrealmd" \
+    MANGOS_MANGOS_DBNAME="tbcmangos" \
+    MANGOS_CHARACTERS_DBNAME="tbccharacters"
+
+COPY entrypoint.sh /
+COPY InstallFullDB.config /home/mangos/tbc-db/
+
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]

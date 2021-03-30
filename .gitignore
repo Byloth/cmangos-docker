@@ -1,17 +1,16 @@
+# Files created by OS
+#
+.DS_Store
+Desktop.ini
+
+# Files created by IDE
+#
+/.idea/
+/.vscode/
+
+/*.code-workspace
+
 # Mounted directories as volumes
 #
 /mangosd_data
 /mariadb_data
-
-# IDE files
-#
-/*.code-workspace
-
-# Configuration files
-#
-/*.conf
-/*.config
-
-# Other files
-#
-*.bat
