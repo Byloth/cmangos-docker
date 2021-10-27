@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
 
+set -e
+
 readonly NAME="mangos-runner"
 readonly IMAGE="cmangos/runner"
 readonly VERSION="tbc"

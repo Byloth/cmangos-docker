@@ -30,7 +30,6 @@ services:
     tty: true
     networks:
       - default
-      - exposed
 
     ports:
       - 8085:8085
@@ -56,7 +55,6 @@ services:
     command: realmd
     networks:
       - default
-      - exposed
 
     ports:
       - 3724:3724
@@ -73,12 +71,9 @@ services:
 
     networks:
       - default
-      - exposed
 
     ports:
       - 8080:80
 
 networks:
   default:
-  exposed:
-    external: true

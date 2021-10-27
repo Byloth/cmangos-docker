@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
 
+set -e
+
 readonly NAME="mangos-builder"
 readonly IMAGE="cmangos/builder"
 readonly VERSION="tbc"
