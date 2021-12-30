@@ -11,7 +11,6 @@ BASE_DIR="$(realpath "${PWD}/..")"
 
 docker run --rm -it \
            --name=${NAME} \
-           --network=exposed \
            -e MANGOS_DBHOST="172.17.0.1" \
            -e MANGOS_DBUSER="root" \
            -e MANGOS_DBPASS="root00" \

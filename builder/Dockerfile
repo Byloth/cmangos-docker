@@ -2,7 +2,7 @@ FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
-ARG TIMEZONE="UTC"
+ARG TIMEZONE="Etc/UTC"
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
         tzdata \
@@ -14,6 +14,7 @@ RUN apt-get update \
         build-essential \
         cmake \
         git-core \
+        libboost-filesystem-dev \
         libboost-program-options-dev \
         libboost-regex-dev \
         libboost-serialization-dev \
@@ -26,8 +27,8 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* \
            /tmp/*
 
-ARG MANGOS_TBC_SHA1="8ebaeb8bae1d4a04229d7f2b04c3f129c1b0a643"
-ARG TBC_DB_SHA1="7623ad991bd4275ea35fe315c1552f5d6cc8df71"
+ARG MANGOS_TBC_SHA1="d0ae18a801130b8eef05d803915238862ef65a9d"
+ARG TBC_DB_SHA1="6960b47b346d65d560bb49ebd45f8a534261fe64"
 RUN mkdir -p /home/mangos/mangos \
              /home/mangos/tbc-db \
  \
@@ -67,7 +68,11 @@ RUN mkdir -p /home/mangos/build \
              /home/mangos/run \
  \
  && cd /home/mangos/build \
- && cmake ../mangos/ -DCMAKE_INSTALL_PREFIX=../run -DBUILD_EXTRACTORS=ON \
+ && cmake ../mangos/ \
+        -DCMAKE_INSTALL_PREFIX=../run \
+        -DPCH=1 \
+        -DDEBUG=0 \
+        -DBUILD_EXTRACTORS=ON \
  && make "-j${THREADS}" \
  && make install \
  \
