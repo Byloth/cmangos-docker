@@ -7,11 +7,10 @@ readonly NAME="mangos-runner"
 readonly IMAGE="cmangos/runner"
 readonly VERSION="tbc"
 
-BASE_DIR="$(realpath "${PWD}/..")"
+readonly DATA_VOLUME="cmangos_mangosd_data"
 
-docker run --rm -it \
-           --name=${NAME} \
-           --network=exposed \
+docker run -it --rm \
+           --name "${NAME}" \
            -e MANGOS_DBHOST="172.17.0.1" \
            -e MANGOS_DBUSER="mangos" \
            -e MANGOS_DBPASS="mangos00" \
@@ -20,11 +19,7 @@ docker run --rm -it \
            -p 7878:7878 \
            -p 8085:8085 \
            -p 8086:8086 \
-           -v ${PWD}/config:/opt/mangos/conf:ro \
-           -v ${BASE_DIR}/mangosd_data/Cameras:/opt/mangos/data/Cameras:ro \
-           -v ${BASE_DIR}/mangosd_data/dbc:/opt/mangos/data/dbc:ro \
-           -v ${BASE_DIR}/mangosd_data/maps:/opt/mangos/data/maps:ro \
-           -v ${BASE_DIR}/mangosd_data/mmaps:/opt/mangos/data/mmaps:ro \
-           -v ${BASE_DIR}/mangosd_data/vmaps:/opt/mangos/data/vmaps:ro \
+           -v "${PWD}/config":/opt/mangos/conf:ro \
+           -v "${DATA_VOLUME}":/opt/mangos/data:ro \
     \
     ${IMAGE}:${VERSION} ${@}

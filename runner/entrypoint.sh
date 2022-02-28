@@ -43,8 +43,9 @@ function compose_mangosd_conf()
     cp mangosd.conf.dist mangosd.conf
 
     _replace_conf "LoginDatabaseInfo" "\"${MANGOS_DBCONN};${MANGOS_REALMD_DBNAME}\"" mangosd.conf
-    _replace_conf "WorldDatabaseInfo" "\"${MANGOS_DBCONN};${MANGOS_MANGOS_DBNAME}\"" mangosd.conf
+    _replace_conf "WorldDatabaseInfo" "\"${MANGOS_DBCONN};${MANGOS_WORLD_DBNAME}\"" mangosd.conf
     _replace_conf "CharacterDatabaseInfo" "\"${MANGOS_DBCONN};${MANGOS_CHARACTERS_DBNAME}\"" mangosd.conf
+    _replace_conf "LogsDatabaseInfo" "\"${MANGOS_DBCONN};${MANGOS_LOGS_DBNAME}\"" mangosd.conf
 
     if [[ -f "/opt/mangos/conf/mangosd.conf" ]]
     then

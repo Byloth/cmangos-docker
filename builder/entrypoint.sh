@@ -34,18 +34,40 @@ function error()
 
 function mysql_execute()
 {
-    mysql -h${MANGOS_DBHOST} -P${MANGOS_DBPORT} -u${MANGOS_DBUSER} -p${MANGOS_DBPASS} ${@}
+    mysql -h${MANGOS_DBHOST} -P${MANGOS_DBPORT} -u${MYSQL_SUPERUSER} -p${MYSQL_SUPERPASS} ${@}
 }
 
 # Sub-functions:
 #
 function extract_resources_from_client()
 {
-    cd /home/mangos/mangos/bin/tools
+    cd /home/mangos/run/bin/tools
 
-    #
-    # TODO!
-    #
+    cp * /home/mangos/wow-client/
+
+    cd /home/mangos/wow-client
+
+    ./ExtractResources.sh
+
+    mv Cameras /home/mangos/data/Cameras
+    mv dbc /home/mangos/data/dbc
+    mv maps /home/mangos/data/maps
+    mv mmaps /home/mangos/data/mmaps
+    mv vmaps /home/mangos/data/vmaps
+
+    mkdir -p /home/mangos/data/logs
+
+    mv *.log /home/mangos/data/logs/
+
+    rm -rf Buildings/ \
+       \
+       ExtractResources.sh \
+       MoveMapGen \
+       MoveMapGen.sh \
+       ad \
+       offmesh.txt \
+       vmap_assembler \
+       vmap_extractor
 }
 
 function init_db()
@@ -53,26 +75,28 @@ function init_db()
     cd /home/mangos/mangos/sql
 
     mysql_execute < create/db_create_mysql.sql
-    mysql_execute ${MANGOS_MANGOS_DBNAME} < base/mangos.sql
-    mysql_execute ${MANGOS_REALMD_DBNAME} < base/realmd.sql
+    mysql_execute ${MANGOS_WORLD_DBNAME} < base/mangos.sql
     mysql_execute ${MANGOS_CHARACTERS_DBNAME} < base/characters.sql
+    mysql_execute ${MANGOS_LOGS_DBNAME} < base/logs.sql
+    mysql_execute ${MANGOS_REALMD_DBNAME} < base/realmd.sql
 
-    load_mangos_db
+    load_world_db
 }
-function load_mangos_db()
+function load_world_db()
 {
     cd /home/mangos/tbc-db
 
-    ./InstallFullDB.sh
+    ./InstallFullDB.sh -InstallAll ${MYSQL_SUPERUSER} ${MYSQL_SUPERPASS} DeleteAll
 }
 
 # Main functions:
 #
 function update_db()
 {
+    echo ""
     echo -e " $(warning "WARNING!" --underline)"
     echo -e "  $(warning "└") This procedure will prune all customized data you"
-    echo -e "     may have loaded into your \"$(info "${MANGOS_MANGOS_DBNAME}")\" database."
+    echo -e "     may have loaded into your \"$(info "${MANGOS_WORLD_DBNAME}")\" database."
     echo -e ""
     read -p "Are you sure to continue? [N]: " ANSWER
 
@@ -82,7 +106,7 @@ function update_db()
         echo -e ""
         echo -e " --------------------------------------"
 
-        load_mangos_db
+        load_world_db
 
         echo -e " $(success "-------")"
         echo -e "  $(success "DONE!")"
@@ -94,9 +118,18 @@ function update_db()
 
 # Execution:
 #
-echo ""
 
 case "${1}" in
+    extract)
+        shift
+
+        extract_resources_from_client
+        ;;
+    init-db)
+        shift
+
+        init_db
+        ;;
     update-db)
         shift
 
@@ -108,5 +141,3 @@ case "${1}" in
         exec ${@}
         ;;
 esac
-
-exit 1

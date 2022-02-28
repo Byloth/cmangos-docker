@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   mariadb:
-    image: mariadb:10.3
+    image: mariadb:10.6
     environment:
       MYSQL_ROOT_PASSWORD: root00
 
@@ -12,8 +12,8 @@ services:
       - 3306:3306
 
     volumes:
+      - mariadb_data:/var/lib/mysql
       - ./database:/etc/mysql/conf.d:ro
-      - ./mariadb_data:/var/lib/mysql
 
   mangosd:
     image: cmangos/runner:tbc
@@ -35,12 +35,8 @@ services:
       - 8085:8085
 
     volumes:
+      - mangosd_data:/opt/mangos/data:ro
       - ./runner/config:/opt/mangos/conf:ro
-      - ./mangosd_data/Cameras:/opt/mangos/data/Cameras:ro
-      - ./mangosd_data/dbc:/opt/mangos/data/dbc:ro
-      - ./mangosd_data/maps:/opt/mangos/data/maps:ro
-      - ./mangosd_data/mmaps:/opt/mangos/data/mmaps:ro
-      - ./mangosd_data/vmaps:/opt/mangos/data/vmaps:ro
 
   realmd:
     image: cmangos/runner:tbc
@@ -77,3 +73,7 @@ services:
 
 networks:
   default:
+
+volumes:
+  mariadb_data:
+  mangosd_data:

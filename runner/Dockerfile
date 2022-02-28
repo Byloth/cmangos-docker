@@ -26,16 +26,17 @@ RUN mkdir /opt/mangos/data \
 
 VOLUME ["/opt/mangos/data"]
 
-ARG TIMEZONE="UTC"
+ARG TIMEZONE="Etc/UTC"
 ENV TIMEZONE="${TIMEZONE}" \
     MANGOS_DBHOST="127.0.0.1" \
     MANGOS_DBPORT="3306" \
     MANGOS_DBUSER="mangos" \
-    MANGOS_DBPASS="mangos" \
+    MANGOS_DBPASS="" \
     \
-    MANGOS_REALMD_DBNAME="tbcrealmd" \
-    MANGOS_MANGOS_DBNAME="tbcmangos" \
-    MANGOS_CHARACTERS_DBNAME="tbccharacters"
+    MANGOS_WORLD_DBNAME="tbcmangos" \
+    MANGOS_CHARACTERS_DBNAME="tbccharacters" \
+    MANGOS_LOGS_DBNAME="tbclogs" \
+    MANGOS_REALMD_DBNAME="tbcrealmd"
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]

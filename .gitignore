@@ -10,7 +10,6 @@ Desktop.ini
 
 /*.code-workspace
 
-# Mounted directories as volumes
+# Environmental files
 #
-/mangosd_data
-/mariadb_data
+.env
