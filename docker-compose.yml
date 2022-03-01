@@ -60,6 +60,9 @@ services:
     depends_on:
       - mariadb
 
+    profiles:
+      - debug
+
     environment:
       PMA_HOST: mariadb
       PMA_USER: root

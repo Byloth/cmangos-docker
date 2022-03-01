@@ -8,6 +8,9 @@ run your CMaNGOS server without need any further configuration.
 
 ### Building all the required images
 
+This may take a while, depending on your computer performance and your internet connection.  
+Please be patient.
+
 **CMaNGOS Builder**
 
 ```sh
