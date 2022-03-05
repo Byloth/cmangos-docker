@@ -24,8 +24,6 @@ COPY entrypoint.sh /
 RUN mkdir /opt/mangos/data \
  && sed -i '/^DataDir/c\DataDir = "/opt/mangos/data"' etc/mangosd.conf.dist
 
-VOLUME ["/opt/mangos/data"]
-
 ARG TIMEZONE="Etc/UTC"
 ENV TIMEZONE="${TIMEZONE}" \
     MANGOS_DBHOST="127.0.0.1" \
@@ -46,3 +44,5 @@ EXPOSE 3443 \
        7878 \
        8085 \
        8086
+
+VOLUME ["/opt/mangos/data"]

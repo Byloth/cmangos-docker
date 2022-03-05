@@ -77,7 +77,7 @@ function set_timezone()
 
 function wait_for_database()
 {
-    wait-for-it -h ${MANGOS_DBHOST} -p ${MANGOS_DBPORT}
+    wait-for-it -h "${MANGOS_DBHOST}" -p "${MANGOS_DBPORT}"
 }
 
 # Main functions:
@@ -105,8 +105,6 @@ function run_realmd()
 
 # Execution:
 #
-echo ""
-
 init_runner
 
 case "${1}" in

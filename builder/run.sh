@@ -23,4 +23,4 @@ docker run -it --rm \
            -v "${DATA_VOLUME}":/home/mangos/data \
            -v "${WOW_CLIENT_DIR}":/home/mangos/wow-client \
     \
-    ${IMAGE}:${VERSION} ${@}
+    "${IMAGE}:${VERSION}" ${@}

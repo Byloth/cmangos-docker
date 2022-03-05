@@ -5,6 +5,11 @@ set -e
 
 # Utils:
 #
+function echoerr()
+{
+    echo "${@}" >&2
+}
+
 function success()
 {
     echo -e "\e[32m${1}\e[0m"
@@ -34,10 +39,27 @@ function error()
 
 function mysql_execute()
 {
-    mysql -h${MANGOS_DBHOST} -P${MANGOS_DBPORT} -u${MYSQL_SUPERUSER} -p${MYSQL_SUPERPASS} ${@}
+    mysql "-h${MANGOS_DBHOST}" "-P${MANGOS_DBPORT}" "-u${MYSQL_SUPERUSER}" "-p${MYSQL_SUPERPASS}" ${@}
+}
+function mysql_dump()
+{
+    local DATABASE_NAME="${1}"
+    local OUTPUT_FILE="${2}"
+
+    mysqldump "-h${MANGOS_DBHOST}" "-P${MANGOS_DBPORT}" "-u${MYSQL_SUPERUSER}" "-p${MYSQL_SUPERPASS}" \
+        "${DATABASE_NAME}" --opt --result-file="${OUTPUT_FILE}"
 }
 
 # Sub-functions:
+#
+function load_world_db()
+{
+    cd /home/mangos/tbc-db
+
+    ./InstallFullDB.sh -InstallAll "${MYSQL_SUPERUSER}" "${MYSQL_SUPERPASS}" DeleteAll
+}
+
+# Main functions:
 #
 function extract_resources_from_client()
 {
@@ -69,28 +91,141 @@ function extract_resources_from_client()
        vmap_assembler \
        vmap_extractor
 }
-
 function init_db()
 {
     cd /home/mangos/mangos/sql
 
     mysql_execute < create/db_create_mysql.sql
-    mysql_execute ${MANGOS_WORLD_DBNAME} < base/mangos.sql
-    mysql_execute ${MANGOS_CHARACTERS_DBNAME} < base/characters.sql
-    mysql_execute ${MANGOS_LOGS_DBNAME} < base/logs.sql
-    mysql_execute ${MANGOS_REALMD_DBNAME} < base/realmd.sql
+    mysql_execute "${MANGOS_WORLD_DBNAME}" < base/mangos.sql
+    mysql_execute "${MANGOS_CHARACTERS_DBNAME}" < base/characters.sql
+    mysql_execute "${MANGOS_LOGS_DBNAME}" < base/logs.sql
+    mysql_execute "${MANGOS_REALMD_DBNAME}" < base/realmd.sql
 
     load_world_db
 }
-function load_world_db()
+function backup_db()
 {
-    cd /home/mangos/tbc-db
+    readonly HELP_MSG="
+Backups the specified database(s) and then returns the
+ result as a single \"tar.gz\" file via standard output.
 
-    ./InstallFullDB.sh -InstallAll ${MYSQL_SUPERUSER} ${MYSQL_SUPERPASS} DeleteAll
+Usage:
+    backup-db [OPTIONS...]
+
+Options:
+    -a | --all
+        Backups all databases.
+
+    -w | --world
+        Backups the world database: \"$(info "${MANGOS_WORLD_DBNAME}")\".
+
+    -c | --characters
+        Backups the characters database: \"$(info "${MANGOS_CHARACTERS_DBNAME}")\".
+
+    -l | --logs
+        Backups the logs database: \"$(info "${MANGOS_LOGS_DBNAME}")\".
+
+    -r | --realmd
+        Backups the realmd database: \"$(info "${MANGOS_REALMD_DBNAME}")\".
+    
+    -h | -? | --help
+        Displays this help message.
+"
+
+    declare -A DATABASES
+
+    while [[ ${#} -gt 0 ]]
+    do
+        case "${1}" in
+            -a | --all)
+                readonly BACKUPS_ALL="true"
+                ;;
+            -w | --world)
+                DATABASES+=( ["world"]="${MANGOS_WORLD_DBNAME}" )
+                ;;
+            -c | --characters)
+                DATABASES+=( ["characters"]="${MANGOS_CHARACTERS_DBNAME}" )
+                ;;
+            -l | --logs)
+                DATABASES+=( ["logs"]="${MANGOS_LOGS_DBNAME}" )
+                ;;
+            -r | --realmd)
+                DATABASES+=( ["realmd"]="${MANGOS_REALMD_DBNAME}" )
+                ;;
+            -h | -? | --help)
+                echo -e "${HELP_MSG}"
+
+                exit 0
+                ;;
+            *)
+                echoerr ""
+                echoerr -e " $(error "ERROR!" --underline)"
+                echoerr -e "  $(error "└") Unknown option: \"$(info "${1}")\""
+                echoerr ""
+                echoerr " Run \"$(info "backup-db --help")\" for more information."
+
+                exit 1
+                ;;
+        esac
+
+        shift
+    done
+
+    if [[ "${BACKUPS_ALL}" == "true" ]]
+    then
+        if [[ -n ${DATABASES[@]} ]]
+        then
+            echoerr ""
+            echoerr -e " $(error "ERROR!" --underline)"
+            echoerr -e "  $(error "└") You cannot specify both \"$(info "--all")\" and any other"
+            echoerr -e "     specific database options at the same time."
+            echoerr ""
+            echoerr " Run \"$(info "backup-db --help")\" for more information."
+
+            exit 2
+        fi
+
+        DATABASES=( ["world"]="${MANGOS_WORLD_DBNAME}" \
+                    ["characters"]="${MANGOS_CHARACTERS_DBNAME}" \
+                    ["logs"]="${MANGOS_LOGS_DBNAME}" \
+                    ["realmd"]="${MANGOS_REALMD_DBNAME}")
+    fi
+    if [[ -z ${DATABASES[@]} ]]
+    then
+        echoerr ""
+        echoerr -e " $(error "ERROR!" --underline)"
+        echoerr -e "  $(error "└") You must specify at least one database to backup."
+        echoerr ""
+        echoerr " Run \"$(info "backup-db --help")\" for more information."
+
+        exit 3
+    fi
+
+    local TIMESTAMP="$(date +"%Y-%m-%d_%H-%M-%S")"
+    local BACKUP_DIRECTORY="/home/mangos/data/backups/${TIMESTAMP}"
+    local BACKUP_FILE="${BACKUP_DIRECTORY}/backup_${TIMESTAMP}.tar.gz"
+
+    mkdir -p "${BACKUP_DIRECTORY}"
+
+    for DATABASE in ${!DATABASES[@]}
+    do
+        local DATABASE_NAME="${DATABASES["${DATABASE}"]}"
+        local OUTPUT_FILENAME="${DATABASE}.sql"
+
+        mysql_dump "${DATABASE_NAME}" "${BACKUP_DIRECTORY}/${OUTPUT_FILENAME}"
+    done
+
+    cd "${BACKUP_DIRECTORY}"
+    tar -czvf "${BACKUP_FILE}" $(ls *.sql | xargs -n 1) > /dev/null
+
+    cat "${BACKUP_FILE}"
 }
+function restore_db()
+{
+    echo "Please, come back later."
 
-# Main functions:
-#
+    exit 1
+}
 function update_db()
 {
     echo ""
@@ -118,7 +253,6 @@ function update_db()
 
 # Execution:
 #
-
 case "${1}" in
     extract)
         shift
@@ -130,10 +264,20 @@ case "${1}" in
 
         init_db
         ;;
+    backup-db)
+        shift
+
+        backup_db ${@}
+        ;;
+    restore-db)
+        shift
+
+        restore_db ${@}
+        ;;
     update-db)
         shift
 
-        update_db ${@}
+        update_db
         ;;
     *)
         cd /home/mangos

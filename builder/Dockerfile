@@ -104,3 +104,5 @@ COPY InstallFullDB.config /home/mangos/tbc-db/
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
+
+VOLUME ["/home/mangos/data"]

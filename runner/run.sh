@@ -22,4 +22,4 @@ docker run -it --rm \
            -v "${PWD}/config":/opt/mangos/conf:ro \
            -v "${DATA_VOLUME}":/opt/mangos/data:ro \
     \
-    ${IMAGE}:${VERSION} ${@}
+    "${IMAGE}:${VERSION}" ${@}

@@ -12,8 +12,7 @@ echo "  Now building a brand-new image...  "
 echo " ----------------------------------- "
 echo ""
 
-docker build --tag ${IMAGE}:${VERSION} \
-             --pull \
+docker build --tag "${IMAGE}:${VERSION}" \
              --build-arg TIMEZONE="Europe/Rome" \
              --build-arg THREADS="8" \
     \
