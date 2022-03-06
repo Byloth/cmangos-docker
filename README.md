@@ -53,7 +53,40 @@ docker-compose up mariadb
 ```
 
 ```bash
+cd builder/
 ./run.sh init-db
+```
+
+### Backing up the database
+
+```bash
+docker-compose up mariadb
+```
+
+```bash
+cd builder/
+./exec.sh backup-db --all > cmangos-backup.tar.gz
+```
+
+### Restoring the database
+
+```bash
+docker-compose up mariadb
+```
+
+```bash
+cd builder/
+./exec.sh restore-db < cmangos-backup.tar.gz
+```
+### Updating the database
+
+```bash
+docker-compose up mariadb
+```
+
+```bash
+cd builder/
+./run.sh update-db
 ```
 
 ### Starting the server

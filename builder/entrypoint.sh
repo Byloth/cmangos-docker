@@ -52,11 +52,17 @@ function mysql_dump()
 
 # Sub-functions:
 #
-function load_world_db()
+function init_world_db()
 {
     cd /home/mangos/tbc-db
 
     ./InstallFullDB.sh -InstallAll "${MYSQL_SUPERUSER}" "${MYSQL_SUPERPASS}" DeleteAll
+}
+function update_world_db()
+{
+    cd /home/mangos/tbc-db
+
+    ./InstallFullDB.sh -World
 }
 
 # Main functions:
@@ -101,7 +107,7 @@ function init_db()
     mysql_execute "${MANGOS_LOGS_DBNAME}" < base/logs.sql
     mysql_execute "${MANGOS_REALMD_DBNAME}" < base/realmd.sql
 
-    load_world_db
+    init_world_db
 }
 function backup_db()
 {
@@ -141,16 +147,16 @@ Options:
                 readonly BACKUPS_ALL="true"
                 ;;
             -w | --world)
-                DATABASES+=( ["world"]="${MANGOS_WORLD_DBNAME}" )
+                DATABASES+=(["world"]="${MANGOS_WORLD_DBNAME}")
                 ;;
             -c | --characters)
-                DATABASES+=( ["characters"]="${MANGOS_CHARACTERS_DBNAME}" )
+                DATABASES+=(["characters"]="${MANGOS_CHARACTERS_DBNAME}")
                 ;;
             -l | --logs)
-                DATABASES+=( ["logs"]="${MANGOS_LOGS_DBNAME}" )
+                DATABASES+=(["logs"]="${MANGOS_LOGS_DBNAME}")
                 ;;
             -r | --realmd)
-                DATABASES+=( ["realmd"]="${MANGOS_REALMD_DBNAME}" )
+                DATABASES+=(["realmd"]="${MANGOS_REALMD_DBNAME}")
                 ;;
             -h | -? | --help)
                 echo -e "${HELP_MSG}"
@@ -185,10 +191,10 @@ Options:
             exit 2
         fi
 
-        DATABASES=( ["world"]="${MANGOS_WORLD_DBNAME}" \
-                    ["characters"]="${MANGOS_CHARACTERS_DBNAME}" \
-                    ["logs"]="${MANGOS_LOGS_DBNAME}" \
-                    ["realmd"]="${MANGOS_REALMD_DBNAME}")
+        DATABASES=(["world"]="${MANGOS_WORLD_DBNAME}" \
+                   ["characters"]="${MANGOS_CHARACTERS_DBNAME}" \
+                   ["logs"]="${MANGOS_LOGS_DBNAME}" \
+                   ["realmd"]="${MANGOS_REALMD_DBNAME}")
     fi
     if [[ -z ${DATABASES[@]} ]]
     then
@@ -222,9 +228,39 @@ Options:
 }
 function restore_db()
 {
-    echo "Please, come back later."
+    local TIMESTAMP="$(date +"%Y-%m-%d_%H-%M-%S")"
+    local TEMP_DIRECTORY="/home/mangos/data/tmp/${TIMESTAMP}"
+    local BACKUP_FILE="${TEMP_DIRECTORY}/backup_${TIMESTAMP}.tar.gz"
 
-    exit 1
+    mkdir -p "${TEMP_DIRECTORY}"
+    cat - > "${BACKUP_FILE}"
+
+    cd "${TEMP_DIRECTORY}"
+
+    tar -xzvf "${BACKUP_FILE}" -C . > /dev/null
+
+    local BACKUP_FILES=($(ls *.sql | xargs -n 1))
+
+    for BACKUP_FILE in ${BACKUP_FILES[@]}
+    do
+        local DATABASE="${BACKUP_FILE%.sql}"
+
+        if [[ "${DATABASE}" == "world" ]]
+        then
+            local DATABASE_NAME="${MANGOS_WORLD_DBNAME}"
+        elif [[ "${DATABASE}" == "characters" ]]
+        then
+            local DATABASE_NAME="${MANGOS_CHARACTERS_DBNAME}"
+        elif [[ "${DATABASE}" == "logs" ]]
+        then
+            local DATABASE_NAME="${MANGOS_LOGS_DBNAME}"
+        elif [[ "${DATABASE}" == "realmd" ]]
+        then
+            local DATABASE_NAME="${MANGOS_REALMD_DBNAME}"
+        fi
+
+        mysql_execute "${DATABASE_NAME}" < "${TEMP_DIRECTORY}/${BACKUP_FILE}"
+    done
 }
 function update_db()
 {
@@ -241,7 +277,7 @@ function update_db()
         echo -e ""
         echo -e " --------------------------------------"
 
-        load_world_db
+        update_world_db
 
         echo -e " $(success "-------")"
         echo -e "  $(success "DONE!")"

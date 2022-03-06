@@ -27,8 +27,8 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* \
            /tmp/*
 
-ARG MANGOS_TBC_SHA1="87d6304b22bbc0b1cc70db987a1773f57e2a86c6"
-ARG TBC_DB_SHA1="b5ba1ceb3a54cfae14efe4b51728ee5adb7adcac"
+ARG MANGOS_TBC_SHA1="7f368701c0fa4f9ea2afb47c2b072c4a11595d6d"
+ARG TBC_DB_SHA1="0649496a2e2c611ad2cd8506c70e04acd299206d"
 RUN mkdir -p /home/mangos/mangos \
              /home/mangos/tbc-db \
  \
