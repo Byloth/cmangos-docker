@@ -12,6 +12,7 @@ RUN apt-get update \
  \
  && apt-get install -y --no-install-recommends \
         build-essential \
+        ca-certificates \
         cmake \
         git-core \
         libboost-filesystem-dev \
@@ -27,20 +28,20 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* \
            /tmp/*
 
-ARG MANGOS_TBC_SHA1="7f368701c0fa4f9ea2afb47c2b072c4a11595d6d"
-ARG TBC_DB_SHA1="0649496a2e2c611ad2cd8506c70e04acd299206d"
+ARG MANGOS_TBC_SHA1="38a8b0760842d11d0b3f54c1bb418fc3ec0b3558"
+ARG TBC_DB_SHA1="559e318b9d7dc9b73bcee97a7070e7f6d7516a7f"
 RUN mkdir -p /home/mangos/mangos \
              /home/mangos/tbc-db \
  \
  && cd /tmp \
- && git clone "git://github.com/cmangos/mangos-tbc.git" \
+ && git clone "https://github.com/cmangos/mangos-tbc.git" \
         --branch "master" \
         --single-branch \
  && cd mangos-tbc/ \
  && git archive "${MANGOS_TBC_SHA1}" | tar xC /home/mangos/mangos \
  \
  && cd /tmp \
- && git clone "git://github.com/cmangos/tbc-db.git" \
+ && git clone "https://github.com/cmangos/tbc-db.git" \
         --branch "master" \
         --single-branch \
  && cd tbc-db/ \
