@@ -3,6 +3,7 @@ FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND="noninteractive"
 
 ARG TIMEZONE="Etc/UTC"
+ENV TZ="${TIMEZONE}"
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
         tzdata \
@@ -28,8 +29,8 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* \
            /tmp/*
 
-ARG MANGOS_TBC_SHA1="38a8b0760842d11d0b3f54c1bb418fc3ec0b3558"
-ARG TBC_DB_SHA1="559e318b9d7dc9b73bcee97a7070e7f6d7516a7f"
+ARG MANGOS_TBC_SHA1="1ec40a2823c1f668daaac2753a2c64591180c26d"
+ARG TBC_DB_SHA1="651dea832ff7f4117834922764779a21b2ac203f"
 RUN mkdir -p /home/mangos/mangos \
              /home/mangos/tbc-db \
  \
