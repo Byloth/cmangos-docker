@@ -1,4 +1,6 @@
-# CMaNGOS running on Docker
+# CMaNGOS running on Docker ⚔
+
+A collection of Docker images ready-to-use to host your emulated private server for WoW wherever you want.
 
 ## Getting Started
 
