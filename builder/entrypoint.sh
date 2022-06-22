@@ -226,6 +226,12 @@ Options:
 
     cat "${BACKUP_FILE}"
 }
+function manage_db()
+{
+    cd /home/mangos/tbc-db
+
+    ./InstallFullDB.sh
+}
 function restore_db()
 {
     local TIMESTAMP="$(date +"%Y-%m-%d_%H-%M-%S")"
@@ -278,10 +284,6 @@ function update_db()
         echo -e " --------------------------------------"
 
         update_world_db
-
-        echo -e " $(success "-------")"
-        echo -e "  $(success "DONE!")"
-        echo -e " $(success "-------")"
     else
         echo -e " └ Ok, no problem! Database have been left untouched."
     fi
@@ -309,6 +311,11 @@ case "${1}" in
         shift
 
         restore_db ${@}
+        ;;
+    manage-db)
+        shift
+
+        manage_db
         ;;
     update-db)
         shift

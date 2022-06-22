@@ -86,7 +86,7 @@ docker-compose up mariadb
 
 ```bash
 cd builder/
-./exec.sh backup-db --all > cmangos-backup.tar.gz
+./run.sh backup-db --all > cmangos-backup.tar.gz
 ```
 
 #### Restoring the database
@@ -97,7 +97,7 @@ docker-compose up mariadb
 
 ```bash
 cd builder/
-./exec.sh restore-db < cmangos-backup.tar.gz
+./run.sh restore-db < cmangos-backup.tar.gz
 ```
 #### Updating the database
 
@@ -113,12 +113,10 @@ cd builder/
 ### Starting the server
 
 ```bash
-docker-compose up
+./start-server.sh
 ```
 
 ### Creating a new account
-
-`mangosd`
 
 ```
 account create [username] [password]
@@ -130,8 +128,9 @@ account create [username] [password]
 account set addon [username] [0 to 1]
 ```
 
-1. Basic version
-2. The Burning Crusade
+0. Basic version
+1. The Burning Crusade
+<!-- 2. Wrath of the Lich King -->
 
 
 #### Setting GM level for an account
@@ -154,6 +153,8 @@ account set gmlevel [username] [0 to 3]
 `delay`: number of seconds
 
 ## Roadmap
+
+- [ ] Adding the details of CMaNGOS and database version that generate the `.tar.gz` backup file right inside of it. 
 
 - [ ] Adding a GitHub Action to run an automatic Docker build on each commit, while also publishing the built Docker image.  
 This will allow anyone to simply download a ready-to-use Docker image, instead of building it on their machine.

@@ -9,8 +9,16 @@ readonly VERSION="tbc"
 
 readonly DATA_VOLUME="cmangos_mangosd_data"
 
-docker run -it --rm \
+if [[ -t 0 ]] && [[ -t 1 ]]
+then
+    readonly TTY="-it"
+else
+    readonly TTY="-i"
+fi
+
+docker run "${TTY}" \
            --name "${NAME}" \
+           --rm \
            -e MANGOS_DBHOST="172.17.0.1" \
            -e MANGOS_DBUSER="mangos" \
            -e MANGOS_DBPASS="mangos00" \

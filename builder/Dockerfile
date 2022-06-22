@@ -29,8 +29,8 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* \
            /tmp/*
 
-ARG MANGOS_TBC_SHA1="1ec40a2823c1f668daaac2753a2c64591180c26d"
-ARG TBC_DB_SHA1="651dea832ff7f4117834922764779a21b2ac203f"
+ARG MANGOS_TBC_SHA1="d014968d3f8b850be48ca778ce14adfb5fbdba8a"
+ARG TBC_DB_SHA1="cef4b92d1f04252916f7da464a6e51503e765b0d"
 RUN mkdir -p /home/mangos/mangos \
              /home/mangos/tbc-db \
  \
@@ -71,11 +71,11 @@ RUN mkdir -p /home/mangos/build \
  \
  && cd /home/mangos/build \
  && cmake ../mangos/ \
-        -DCMAKE_INSTALL_PREFIX=../run \
-        -DPCH=1 \
-        -DDEBUG=0 \
-        -DBUILD_EXTRACTORS=ON \
- && make "-j${THREADS}" \
+        -D CMAKE_INSTALL_PREFIX=../run \
+        -D PCH=1 \
+        -D DEBUG=0 \
+        -D BUILD_EXTRACTORS=ON \
+ && make -j "${THREADS}" \
  && make install \
  \
  && cd /home/mangos/run/bin/tools \
