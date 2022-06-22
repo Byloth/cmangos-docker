@@ -1,0 +1,14 @@
+name: Docker images build & release
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build process
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      
