@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   mariadb:
-    image: mariadb:10.7
+    image: mariadb:10.8
     environment:
       MYSQL_ROOT_PASSWORD: root00
 
@@ -56,7 +56,7 @@ services:
       - 3724:3724
 
   phpmyadmin:
-    image: phpmyadmin:5.1
+    image: phpmyadmin:5.2
     depends_on:
       - mariadb
 

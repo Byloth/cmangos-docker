@@ -13,7 +13,7 @@ readonly VERSION="tbc"
 
 readonly DATA_VOLUME="cmangos_mangosd_data"
 
-if [[ -t 1 ]]
+if [[ -t 0 ]] && [[ -t 1 ]]
 then
     readonly TTY="-it"
 else
