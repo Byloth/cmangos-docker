@@ -22,19 +22,23 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pull the Docker cache image
-        run: docker pull "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" || true
+      - name: Pull the Docker cache images
+        run: |
+          docker pull "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" || true & \
+          docker pull "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" || true
 
-      - name: Build the Docker image
+      - name: Build the Docker images
         run: |
           docker build --file builder/Dockerfile \
                        --cache-from "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" \
+                       --cache-from "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" \
+                       --build-arg THREADS="2" \
                        --tag "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" \
                        --tag "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" \
             \
             .  # There's a `dot` on this line!
 
-      - name: Push Docker images
+      - name: Push the Docker images
         run: |
           docker push "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" & \
           docker push "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}"
@@ -58,19 +62,22 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pull the Docker cache image
-        run: docker pull "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" || true
+      - name: Pull the Docker cache images
+        run: |
+          docker pull "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" || true & \
+          docker pull "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}" || true
 
-      - name: Build the Docker image
+      - name: Build the Docker images
         run: |
           docker build --file runner/Dockerfile \
                        --cache-from "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" \
+                       --cache-from "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}" \
                        --tag "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" \
                        --tag "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}" \
             \
             .  # There's a `dot` on this line!
 
-      - name: Push Docker images
+      - name: Push the Docker images
         run: |
           docker push "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" & \
           docker push "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}"
