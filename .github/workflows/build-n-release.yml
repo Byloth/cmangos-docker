@@ -29,14 +29,13 @@ jobs:
 
       - name: Build the Docker images
         run: |
-          docker build --file builder/Dockerfile \
+          docker build --build-arg THREADS="2" \
                        --cache-from "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" \
                        --cache-from "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" \
-                       --build-arg THREADS="2" \
                        --tag "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" \
                        --tag "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" \
             \
-            .  # There's a `dot` on this line!
+            ./builder/
 
       - name: Push the Docker images
         run: |
@@ -69,13 +68,12 @@ jobs:
 
       - name: Build the Docker images
         run: |
-          docker build --file runner/Dockerfile \
-                       --cache-from "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" \
+          docker build --cache-from "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" \
                        --cache-from "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}" \
                        --tag "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" \
                        --tag "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}" \
             \
-            .  # There's a `dot` on this line!
+            ./runner/
 
       - name: Push the Docker images
         run: |
