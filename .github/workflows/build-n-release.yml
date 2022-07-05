@@ -61,6 +61,9 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Pull the CMaNGOS builder image
+        run: docker pull "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}"
+
       - name: Pull the Docker cache images
         run: |
           docker pull "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" || true & \
@@ -68,7 +71,8 @@ jobs:
 
       - name: Build the Docker images
         run: |
-          docker build --cache-from "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" \
+          docker build --build-arg BUILDER_IMAGE="${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" \
+                       --cache-from "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" \
                        --cache-from "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}" \
                        --tag "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" \
                        --tag "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}" \
