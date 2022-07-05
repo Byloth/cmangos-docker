@@ -31,11 +31,11 @@ jobs:
 
       - name: Pull the Docker cache images
         run: |
-          if docker pull "${{ env.BUILDER_IMAGE_REF }}" &> /dev/null
+          if docker pull "${{ env.BUILDER_IMAGE_REF }}"
           then
             docker tag "${{ env.BUILDER_IMAGE_REF }}" "${{ env.BUILDER_IMAGE_CACHE }}"
 
-          elif docker pull "${{ env.BUILDER_IMAGE_TAG }}" &> /dev/null
+          elif docker pull "${{ env.BUILDER_IMAGE_TAG }}"
           then
             docker tag "${{ env.BUILDER_IMAGE_TAG }}" "${{ env.BUILDER_IMAGE_CACHE }}"
           fi
@@ -89,11 +89,11 @@ jobs:
 
       - name: Pull the Docker cache images
         run: |
-          if docker pull "${{ env.RUNNER_IMAGE_REF }}" &> /dev/null
+          if docker pull "${{ env.RUNNER_IMAGE_REF }}"
           then
             docker tag "${{ env.RUNNER_IMAGE_REF }}" "${{ env.RUNNER_IMAGE_CACHE }}"
 
-          elif docker pull "${{ env.RUNNER_IMAGE_TAG }}" &> /dev/null
+          elif docker pull "${{ env.RUNNER_IMAGE_TAG }}"
           then
             docker tag "${{ env.RUNNER_IMAGE_TAG }}" "${{ env.RUNNER_IMAGE_CACHE }}"
           fi
