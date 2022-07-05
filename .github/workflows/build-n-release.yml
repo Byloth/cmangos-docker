@@ -7,6 +7,9 @@ jobs:
   builder-build:
     name: "`builder` building process"
     runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: "1"
+
     steps:
       - name: Clone the repository
         uses: actions/checkout@v2
@@ -30,8 +33,6 @@ jobs:
       - name: Build the Docker images
         run: |
           docker build --build-arg THREADS="2" \
-                       --cache-from "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" \
-                       --cache-from "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" \
                        --tag "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" \
                        --tag "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" \
             \
@@ -46,6 +47,9 @@ jobs:
     name: "`runner` building process"
     needs: builder-build
     runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: "1"
+
     steps:
       - name: Clone the repository
         uses: actions/checkout@v2
@@ -62,7 +66,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull the CMaNGOS builder image
-        run: docker pull "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}"
+        run: |
+          docker pull "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" && \
+          docker tag "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" \
+                     "cmangos/builder:tbc"
 
       - name: Pull the Docker cache images
         run: |
@@ -71,10 +78,7 @@ jobs:
 
       - name: Build the Docker images
         run: |
-          docker build --build-arg BUILDER_IMAGE="${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" \
-                       --cache-from "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" \
-                       --cache-from "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}" \
-                       --tag "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" \
+          docker build --tag "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" \
                        --tag "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}" \
             \
             ./runner/

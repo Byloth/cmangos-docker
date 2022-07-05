@@ -26,8 +26,7 @@ RUN useradd --home /home/mangos --create-home \
 
 WORKDIR /opt/mangos
 
-ARG BUILDER_IMAGE="cmangos/builder:tbc"
-COPY --from="${BUILDER_IMAGE}" /home/mangos/run /opt/mangos
+COPY --from=cmangos/builder:tbc /home/mangos/run /opt/mangos
 COPY entrypoint.sh /
 
 RUN mkdir /opt/mangos/data \
