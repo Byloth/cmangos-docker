@@ -7,9 +7,6 @@ jobs:
   builder-build:
     name: "`builder` building process"
     runs-on: ubuntu-latest
-    env:
-      DOCKER_BUILDKIT: "1"
-
     steps:
       - name: Clone the repository
         uses: actions/checkout@v2
@@ -25,31 +22,42 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Definition of environmental variables
+        run: |
+          export BUILDER_IMAGE_REF="${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" && \
+          export BUILDER_IMAGE_TAG="${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" && \
+          \
+          export BUILDER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/builder:cache
+
       - name: Pull the Docker cache images
         run: |
-          docker pull "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" || true & \
-          docker pull "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" || true
+          if docker pull "${BUILDER_IMAGE_REF}" &> /dev/null
+          then
+            docker tag "${BUILDER_IMAGE_REF}" "${BUILDER_IMAGE_CACHE}"
+
+          elif docker pull "${BUILDER_IMAGE_TAG}" &> /dev/null
+          then
+            docker tag "${BUILDER_IMAGE_TAG}" "${BUILDER_IMAGE_CACHE}"
+          fi
 
       - name: Build the Docker images
         run: |
           docker build --build-arg THREADS="2" \
-                       --tag "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" \
-                       --tag "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" \
+                       --cache-from "${BUILDER_IMAGE_CACHE}" \
+                       --tag "${BUILDER_IMAGE_REF}" \
+                       --tag "${BUILDER_IMAGE_TAG}" \
             \
             ./builder/
 
       - name: Push the Docker images
         run: |
-          docker push "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" & \
-          docker push "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}"
+          docker push "${BUILDER_IMAGE_REF}" && \
+          docker push "${BUILDER_IMAGE_TAG}"
 
   runner-build:
     name: "`runner` building process"
     needs: builder-build
     runs-on: ubuntu-latest
-    env:
-      DOCKER_BUILDKIT: "1"
-
     steps:
       - name: Clone the repository
         uses: actions/checkout@v2
@@ -65,21 +73,36 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Definition of environmental variables
+        run: |
+          export BUILDER_IMAGE="${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" && \
+          \
+          export RUNNER_IMAGE_REF="${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}" && \
+          export RUNNER_IMAGE_TAG="${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" && \
+          \
+          export RUNNER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/runner:cache
+
       - name: Pull the CMaNGOS builder image
         run: |
-          docker pull "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" && \
-          docker tag "${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" \
-                     "cmangos/builder:tbc"
+          docker pull "${BUILDER_IMAGE}" && \
+          docker tag "${BUILDER_IMAGE}" "cmangos/builder:tbc"
 
       - name: Pull the Docker cache images
         run: |
-          docker pull "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" || true & \
-          docker pull "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}" || true
+          if docker pull "${RUNNER_IMAGE_REF}" &> /dev/null
+          then
+            docker tag "${RUNNER_IMAGE_REF}" "${RUNNER_IMAGE_CACHE}"
+
+          elif docker pull "${RUNNER_IMAGE_TAG}" &> /dev/null
+          then
+            docker tag "${RUNNER_IMAGE_TAG}" "${RUNNER_IMAGE_CACHE}"
+          fi
 
       - name: Build the Docker images
         run: |
-          docker build --tag "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" \
-                       --tag "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}" \
+          docker build --cache-from "${RUNNER_IMAGE_CACHE}" \
+                       --tag "${RUNNER_IMAGE_REF}" \
+                       --tag "${RUNNER_IMAGE_TAG}" \
             \
             ./runner/
 
