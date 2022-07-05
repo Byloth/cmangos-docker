@@ -27,7 +27,7 @@ jobs:
           export BUILDER_IMAGE_REF="${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" && \
           export BUILDER_IMAGE_TAG="${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" && \
           \
-          export BUILDER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/builder:cache
+          export BUILDER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/builder:cache"
 
       - name: Pull the Docker cache images
         run: |
@@ -80,7 +80,7 @@ jobs:
           export RUNNER_IMAGE_REF="${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}" && \
           export RUNNER_IMAGE_TAG="${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" && \
           \
-          export RUNNER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/runner:cache
+          export RUNNER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/runner:cache"
 
       - name: Pull the CMaNGOS builder image
         run: |
