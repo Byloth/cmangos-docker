@@ -42,10 +42,10 @@ jobs:
 
       - name: Retrieve repo hashes
         run: |
-          curl -sSL https://api.github.com/repos/cmangos/mangos-tbc/commits/master \
-            -H 'Accept: application/vnd.github.VERSION.sha' | sed 's/^/MANGOS_TBC_SHA1=/' >> "${GITHUB_ENV}" && \
-          curl -sSL https://api.github.com/repos/cmangos/tbc-db/commits/master \
-            -H 'Accept: application/vnd.github.VERSION.sha' | sed 's/^/TBC_DB_SHA1=/' >> "${GITHUB_ENV}"
+          (curl -sSL https://api.github.com/repos/cmangos/mangos-tbc/commits/master \
+            -H 'Accept: application/vnd.github.VERSION.sha' | sed 's/^/MANGOS_TBC_SHA1=/' && echo) >> "${GITHUB_ENV}" && \
+          (curl -sSL https://api.github.com/repos/cmangos/tbc-db/commits/master \
+            -H 'Accept: application/vnd.github.VERSION.sha' | sed 's/^/TBC_DB_SHA1=/' && echo) >> "${GITHUB_ENV}"
 
       - name: Build the Docker images
         run: |
