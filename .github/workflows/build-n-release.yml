@@ -40,9 +40,18 @@ jobs:
             docker tag "${{ env.BUILDER_IMAGE_TAG }}" "${{ env.BUILDER_IMAGE_CACHE }}"
           fi
 
+      - name: Retrieve repo hashes
+        run: |
+          curl -sSL https://api.github.com/repos/cmangos/mangos-tbc/commits/master \
+            -H 'Accept: application/vnd.github.VERSION.sha' | sed 's/^/MANGOS_TBC_SHA1=/' >> "${GITHUB_ENV}" && \
+          curl -sSL https://api.github.com/repos/cmangos/tbc-db/commits/master \
+            -H 'Accept: application/vnd.github.VERSION.sha' | sed 's/^/TBC_DB_SHA1=/' >> "${GITHUB_ENV}"
+
       - name: Build the Docker images
         run: |
-          docker build --build-arg THREADS="2" \
+          docker build --build-arg THREADS='2' \
+                       --build-arg MANGOS_TBC_SHA1="${{ env.MANGOS_TBC_SHA1 }}" \
+                       --build-arg TBC_DB_SHA1="${{ env.TBC_DB_SHA1 }}" \
                        --cache-from "${{ env.BUILDER_IMAGE_CACHE }}" \
                        --tag "${{ env.BUILDER_IMAGE_REF }}" \
                        --tag "${{ env.BUILDER_IMAGE_TAG }}" \

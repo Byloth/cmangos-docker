@@ -108,3 +108,6 @@ ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
 
 VOLUME ["/home/mangos/data"]
+
+LABEL MANGOS_TBC_SHA1 "${MANGOS_TBC_SHA1}"
+LABEL TBC_DB_SHA1 "${TBC_DB_SHA1}"
