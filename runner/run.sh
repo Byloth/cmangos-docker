@@ -28,6 +28,6 @@ docker run "${TTY}" \
            -p 8085:8085 \
            -p 8086:8086 \
            -v "${PWD}/config":/opt/mangos/conf:ro \
-           -v "${DATA_VOLUME}":/opt/mangos/data:ro \
+           -v "${DATA_VOLUME}":/var/lib/mangos:ro \
     \
     "${IMAGE}:${VERSION}" ${@}

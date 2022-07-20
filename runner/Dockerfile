@@ -20,35 +20,49 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* \
            /tmp/*
 
-RUN useradd --home /home/mangos --create-home \
+ENV HOME_DIR="/home/mangos"
+ENV MANGOS_DIR="/opt/mangos"
+RUN useradd --home "${HOME_DIR}" --create-home \
             --comment "MaNGOS" \
             --user-group mangos
 
-WORKDIR /opt/mangos
+WORKDIR "${MANGOS_DIR}"
 
-COPY --from=cmangos/builder:tbc /home/mangos/run /opt/mangos
+ARG EXPANSION
+COPY --from=cmangos/builder:${EXPANSION} "${HOME_DIR}/run" "${MANGOS_DIR}"
 COPY entrypoint.sh /
 
-RUN mkdir /opt/mangos/data \
- && sed -i '/^DataDir/c\DataDir = "/opt/mangos/data"' etc/mangosd.conf.dist
+ENV VOLUME_DIR="/var/lib/mangos"
+ENV TMPDIR="${VOLUME_DIR}/tmp"
+RUN mkdir "${VOLUME_DIR}" \
+ && sed -i '/^DataDir/c\DataDir = "'"${VOLUME_DIR}"'"' etc/mangosd.conf.dist
 
-ENV MANGOS_DBHOST="127.0.0.1" \
-    MANGOS_DBPORT="3306" \
-    MANGOS_DBUSER="mangos" \
-    MANGOS_DBPASS="" \
-    \
-    MANGOS_WORLD_DBNAME="tbcmangos" \
-    MANGOS_CHARACTERS_DBNAME="tbccharacters" \
-    MANGOS_LOGS_DBNAME="tbclogs" \
-    MANGOS_REALMD_DBNAME="tbcrealmd"
+ENV MANGOS_DBHOST="host.docker.internal"
+ENV MANGOS_DBPORT="3306"
+ENV MANGOS_DBUSER="mangos"
+ENV MANGOS_DBPASS=""
+
+ENV MANGOS_WORLD_DBNAME="${EXPANSION}mangos"
+ENV MANGOS_CHARACTERS_DBNAME="${EXPANSION}characters"
+ENV MANGOS_LOGS_DBNAME="${EXPANSION}logs"
+ENV MANGOS_REALMD_DBNAME="${EXPANSION}realmd"
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
 
-EXPOSE 3443 \
-       3724 \
-       7878 \
-       8085 \
-       8086
+EXPOSE 3443 3724 7878 8085 8086
+VOLUME ["${VOLUME_DIR}"]
 
-VOLUME ["/opt/mangos/data"]
+ARG COMMIT_SHA
+ARG CREATE_DATE
+ARG VERSION
+LABEL org.opencontainers.image.title="CMaNGOS Runner \"${EXPANSION}\" version"
+LABEL org.opencontainers.image.description="A CMaNGOS \"${EXPANSION}\" version Docker image ready-to-use to host your emulated private server for WoW wherever you want."
+LABEL org.opencontainers.image.licenses="GPL-2.0"
+LABEL org.opencontainers.image.version="${VERSION}"
+LABEL org.opencontainers.image.revision="${COMMIT_SHA}"
+LABEL org.opencontainers.image.source="https://github.com/Byloth/cmangos-docker"
+LABEL org.opencontainers.image.url="https://github.com/Byloth/cmangos-docker"
+LABEL org.opencontainers.image.authors="Matteo Bilotta <me@byloth.net>"
+LABEL org.opencontainers.image.vendor="Bylothink"
+LABEL org.opencontainers.image.created="${CREATE_DATE}"

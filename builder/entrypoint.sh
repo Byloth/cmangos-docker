@@ -54,13 +54,13 @@ function mysql_dump()
 #
 function init_world_db()
 {
-    cd /home/mangos/tbc-db
+    cd "${DATABASE_DIR}"
 
     ./InstallFullDB.sh -InstallAll "${MYSQL_SUPERUSER}" "${MYSQL_SUPERPASS}" DeleteAll
 }
 function update_world_db()
 {
-    cd /home/mangos/tbc-db
+    cd "${DATABASE_DIR}"
 
     ./InstallFullDB.sh -World
 }
@@ -69,23 +69,21 @@ function update_world_db()
 #
 function extract_resources_from_client()
 {
-    cd /home/mangos/run/bin/tools
+    cd "${HOME_DIR}/run/bin/tools"
 
-    cp * /home/mangos/wow-client/
-
-    cd /home/mangos/wow-client
+    cp * "${HOME_DIR}/wow-client/"
+    cd "${HOME_DIR}/wow-client"
 
     ./ExtractResources.sh
 
-    mv Cameras /home/mangos/data/Cameras
-    mv dbc /home/mangos/data/dbc
-    mv maps /home/mangos/data/maps
-    mv mmaps /home/mangos/data/mmaps
-    mv vmaps /home/mangos/data/vmaps
+    mv Cameras "${VOLUME_DIR}/Cameras"
+    mv dbc "${VOLUME_DIR}/dbc"
+    mv maps "${VOLUME_DIR}/maps"
+    mv mmaps "${VOLUME_DIR}/mmaps"
+    mv vmaps "${VOLUME_DIR}/vmaps"
 
-    mkdir -p /home/mangos/data/logs
-
-    mv *.log /home/mangos/data/logs/
+    mkdir -p "${VOLUME_DIR}/logs"
+    mv *.log "${VOLUME_DIR}/logs/"
 
     rm -rf Buildings/ \
        \
@@ -99,7 +97,7 @@ function extract_resources_from_client()
 }
 function init_db()
 {
-    cd /home/mangos/mangos/sql
+    cd "${MANGOS_DIR}/sql"
 
     mysql_execute < create/db_create_mysql.sql
     mysql_execute "${MANGOS_WORLD_DBNAME}" < base/mangos.sql
@@ -208,40 +206,40 @@ Options:
     fi
 
     local TIMESTAMP="$(date +"%Y-%m-%d_%H-%M-%S")"
-    local BACKUP_DIRECTORY="/home/mangos/data/backups/${TIMESTAMP}"
-    local BACKUP_FILE="${BACKUP_DIRECTORY}/backup_${TIMESTAMP}.tar.gz"
+    local BACKUP_DIR="/home/mangos/data/backups/${TIMESTAMP}"
+    local BACKUP_FILE="${BACKUP_DIR}/backup_${TIMESTAMP}.tar.gz"
 
-    mkdir -p "${BACKUP_DIRECTORY}"
+    mkdir -p "${BACKUP_DIR}"
 
     for DATABASE in ${!DATABASES[@]}
     do
         local DATABASE_NAME="${DATABASES["${DATABASE}"]}"
         local OUTPUT_FILENAME="${DATABASE}.sql"
 
-        mysql_dump "${DATABASE_NAME}" "${BACKUP_DIRECTORY}/${OUTPUT_FILENAME}"
+        mysql_dump "${DATABASE_NAME}" "${BACKUP_DIR}/${OUTPUT_FILENAME}"
     done
 
-    cd "${BACKUP_DIRECTORY}"
+    cd "${BACKUP_DIR}"
     tar -czvf "${BACKUP_FILE}" $(ls *.sql | xargs -n 1) > /dev/null
 
     cat "${BACKUP_FILE}"
 }
 function manage_db()
 {
-    cd /home/mangos/tbc-db
+    cd "${DATABASE_DIR}"
 
     ./InstallFullDB.sh
 }
 function restore_db()
 {
     local TIMESTAMP="$(date +"%Y-%m-%d_%H-%M-%S")"
-    local TEMP_DIRECTORY="/home/mangos/data/tmp/${TIMESTAMP}"
-    local BACKUP_FILE="${TEMP_DIRECTORY}/backup_${TIMESTAMP}.tar.gz"
+    local TEMP_DIR="${TMPDIR}/${TIMESTAMP}"
+    local BACKUP_FILE="${TEMP_DIR}/backup_${TIMESTAMP}.tar.gz"
 
-    mkdir -p "${TEMP_DIRECTORY}"
+    mkdir -p "${TEMP_DIR}"
     cat - > "${BACKUP_FILE}"
 
-    cd "${TEMP_DIRECTORY}"
+    cd "${TEMP_DIR}"
 
     tar -xzvf "${BACKUP_FILE}" -C . > /dev/null
 
@@ -265,7 +263,7 @@ function restore_db()
             local DATABASE_NAME="${MANGOS_REALMD_DBNAME}"
         fi
 
-        mysql_execute "${DATABASE_NAME}" < "${TEMP_DIRECTORY}/${BACKUP_FILE}"
+        mysql_execute "${DATABASE_NAME}" < "${TEMP_DIR}/${BACKUP_FILE}"
     done
 }
 function update_db()
@@ -323,7 +321,7 @@ case "${1}" in
         update_db
         ;;
     *)
-        cd /home/mangos
+        cd "${HOME_DIR}"
 
         exec ${@}
         ;;
