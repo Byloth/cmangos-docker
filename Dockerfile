@@ -135,7 +135,7 @@ LABEL "net.cmangos.mangos-${EXPANSION}.revision"="${MANGOS_SHA1}"
 LABEL "net.cmangos.mangos-${EXPANSION}.source"="https://github.com/cmangos/mangos-${EXPANSION}"
 LABEL "net.cmangos.mangos-${EXPANSION}.url"="https://github.com/cmangos/mangos-${EXPANSION}"
 
-LABEL "net.cmangos.${EXPANSION}-db.revision"="${DB_SHA1}"
+LABEL "net.cmangos.${EXPANSION}-db.revision"="${DATABASE_SHA1}"
 LABEL "net.cmangos.${EXPANSION}-db.source"="https://github.com/cmangos/${EXPANSION}-db"
 LABEL "net.cmangos.${EXPANSION}-db.url"="https://github.com/cmangos/${EXPANSION}-db"
 
@@ -214,6 +214,6 @@ LABEL "net.cmangos.mangos-${EXPANSION}.source"="https://github.com/cmangos/mango
 LABEL "net.cmangos.mangos-${EXPANSION}.url"="https://github.com/cmangos/mangos-${EXPANSION}"
 
 ARG DATABASE_SHA1
-LABEL "net.cmangos.${EXPANSION}-db.revision"="${DB_SHA1}"
+LABEL "net.cmangos.${EXPANSION}-db.revision"="${DATABASE_SHA1}"
 LABEL "net.cmangos.${EXPANSION}-db.source"="https://github.com/cmangos/${EXPANSION}-db"
 LABEL "net.cmangos.${EXPANSION}-db.url"="https://github.com/cmangos/${EXPANSION}-db"
