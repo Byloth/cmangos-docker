@@ -14,6 +14,7 @@ jobs:
         uses: Byloth/docker-setup-action@v1
         with:
           registry: ghcr.io
+          repository: Byloth/CMaNGOS
 
       - name: Login to the GitHub Container Registry
         uses: docker/login-action@v1
@@ -27,6 +28,7 @@ jobs:
           echo BUILDER_IMAGE_REF="${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
           echo BUILDER_IMAGE_TAG="${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" >> "${GITHUB_ENV}" && \
           \
+          echo BUILDER_IMAGE_LAST="${{ env.DOCKER_IMAGE }}/builder:latest" >> "${GITHUB_ENV}" && \
           echo BUILDER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/builder:cache" >> "${GITHUB_ENV}"
 
       - name: Pull the Docker cache images
@@ -38,25 +40,37 @@ jobs:
           elif docker pull "${{ env.BUILDER_IMAGE_TAG }}"
           then
             docker tag "${{ env.BUILDER_IMAGE_TAG }}" "${{ env.BUILDER_IMAGE_CACHE }}"
+          
+          elif docker pull "${{ env.BUILDER_IMAGE_LAST }}"
+          then
+            docker tag "${{ env.BUILDER_IMAGE_LAST }}" "${{ env.BUILDER_IMAGE_CACHE }}"
           fi
 
-      - name: Retrieve repo hashes
+      - name: Definition of build arguments
         run: |
-          (curl -sSL https://api.github.com/repos/cmangos/mangos-tbc/commits/master \
-            -H 'Accept: application/vnd.github.VERSION.sha' | sed 's/^/MANGOS_TBC_SHA1=/' && echo) >> "${GITHUB_ENV}" && \
-          (curl -sSL https://api.github.com/repos/cmangos/tbc-db/commits/master \
-            -H 'Accept: application/vnd.github.VERSION.sha' | sed 's/^/TBC_DB_SHA1=/' && echo) >> "${GITHUB_ENV}"
+          echo MANGOS_SHA1="$(curl -sSL https://api.github.com/repos/cmangos/mangos-tbc/commits/master \
+                                   -H "Accept: application/vnd.github.VERSION.sha")" >> "${GITHUB_ENV}" && \
+          echo DATABASE_SHA1="$(curl -sSL https://api.github.com/repos/cmangos/tbc-db/commits/master \
+                                     -H "Accept: application/vnd.github.VERSION.sha")" >> "${GITHUB_ENV}" && \
+          \
+          echo TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" && \
+          echo VERSION_CODE="1.0.0-nightly+$(date -u +"%Y%m%d")"
 
       - name: Build the Docker images
         run: |
-          docker build --build-arg THREADS='2' \
-                       --build-arg MANGOS_TBC_SHA1="${{ env.MANGOS_TBC_SHA1 }}" \
-                       --build-arg TBC_DB_SHA1="${{ env.TBC_DB_SHA1 }}" \
+          docker build --build-arg EXPANSION="tbc" \
+                       --build-arg MANGOS_SHA1="${{ env.MANGOS_SHA1 }}" \
+                       --build-arg DATABASE_SHA1="${{ env.DATABASE_SHA1 }}" \
+                       --build-arg THREADS="2" \
+                       --build-arg COMMIT_SHA="${{ env.GITHUB_SHA }}" \
+                       --build-arg CREATE_DATE="${{ env.TIMESTAMP }}" \
+                       --build-arg VERSION="${{ env.VERSION_CODE }}" \
                        --cache-from "${{ env.BUILDER_IMAGE_CACHE }}" \
                        --tag "${{ env.BUILDER_IMAGE_REF }}" \
                        --tag "${{ env.BUILDER_IMAGE_TAG }}" \
+                       --target "builder" \
             \
-            ./builder/
+            .
 
       - name: Push the Docker images
         run: |
@@ -74,6 +88,7 @@ jobs:
         uses: Byloth/docker-setup-action@v1
         with:
           registry: ghcr.io
+          repository: Byloth/CMaNGOS
 
       - name: Login to the GitHub Container Registry
         uses: docker/login-action@v1
@@ -89,12 +104,11 @@ jobs:
           echo RUNNER_IMAGE_REF="${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
           echo RUNNER_IMAGE_TAG="${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" >> "${GITHUB_ENV}" && \
           \
+          echo RUNNER_IMAGE_LAST="${{ env.DOCKER_IMAGE }}/runner:latest" >> "${GITHUB_ENV}" && \
           echo RUNNER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/runner:cache" >> "${GITHUB_ENV}"
 
       - name: Pull the CMaNGOS builder image
-        run: |
-          docker pull "${{ env.BUILDER_IMAGE }}" && \
-          docker tag "${{ env.BUILDER_IMAGE }}" "cmangos/builder:tbc"
+        run: docker pull "${{ env.BUILDER_IMAGE }}"
 
       - name: Pull the Docker cache images
         run: |
@@ -105,15 +119,38 @@ jobs:
           elif docker pull "${{ env.RUNNER_IMAGE_TAG }}"
           then
             docker tag "${{ env.RUNNER_IMAGE_TAG }}" "${{ env.RUNNER_IMAGE_CACHE }}"
+          
+          elif docker pull "${{ env.RUNNER_IMAGE_LAST }}"
+          then
+            docker tag "${{ env.RUNNER_IMAGE_LAST }}" "${{ env.RUNNER_IMAGE_CACHE }}"
           fi
+
+      - name: Definition of build arguments
+        run: |
+          echo MANGOS_SHA1="$(curl -sSL https://api.github.com/repos/cmangos/mangos-tbc/commits/master \
+                                   -H "Accept: application/vnd.github.VERSION.sha")" >> "${GITHUB_ENV}" && \
+          echo DATABASE_SHA1="$(curl -sSL https://api.github.com/repos/cmangos/tbc-db/commits/master \
+                                     -H "Accept: application/vnd.github.VERSION.sha")" >> "${GITHUB_ENV}" && \
+          \
+          echo TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" && \
+          echo VERSION_CODE="1.0.0-nightly+$(date -u +"%Y%m%d")"
 
       - name: Build the Docker images
         run: |
-          docker build --cache-from "${{ env.RUNNER_IMAGE_CACHE }}" \
+          docker build --build-arg EXPANSION="tbc" \
+                       --build-arg MANGOS_SHA1="${{ env.MANGOS_SHA1 }}" \
+                       --build-arg DATABASE_SHA1="${{ env.DATABASE_SHA1 }}" \
+                       --build-arg THREADS="2" \
+                       --build-arg COMMIT_SHA="${{ env.GITHUB_SHA }}" \
+                       --build-arg CREATE_DATE="${{ env.TIMESTAMP }}" \
+                       --build-arg VERSION="${{ env.VERSION_CODE }}" \
+                       --cache-from "${{ env.BUILDER_IMAGE }}" \
+                       --cache-from "${{ env.RUNNER_IMAGE_CACHE }}" \
                        --tag "${{ env.RUNNER_IMAGE_REF }}" \
                        --tag "${{ env.RUNNER_IMAGE_TAG }}" \
+                       --target "runner" \
             \
-            ./runner/
+            .
 
       - name: Push the Docker images
         run: |

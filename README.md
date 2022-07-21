@@ -32,18 +32,8 @@ run your CMaNGOS server without need any further configuration.
 This may take a while, depending on your computer performance and your internet connection.  
 Please be patient.
 
-**CMaNGOS Builder**
-
 ```sh
-cd builder/
-./build.sh
-```
-
-**CMaNGOS Runner**
-
-```sh
-cd runner/
-./build.sh
+./build-server.sh --target all
 ```
 
 ### Extracting files from the WoW client
@@ -132,8 +122,7 @@ account set addon [username] [0 to 1]
 
 0. Basic version
 1. The Burning Crusade
-<!-- 2. Wrath of the Lich King -->
-
+2. Wrath of the Lich King
 
 #### Setting GM level for an account
 

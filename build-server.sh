@@ -3,7 +3,7 @@
 
 set -e
 
-function _docker-build()
+function docker-build()
 {
     docker build ${@} \
              \
@@ -14,6 +14,7 @@ function _docker-build()
              --build-arg EXPANSION="${EXPANSION}" \
              --build-arg MANGOS_SHA1="${MANGOS_SHA1}" \
              --build-arg DATABASE_SHA1="${DATABASE_SHA1}" \
+             --build-arg THREADS="${THREADS}" \
              --build-arg COMMIT_SHA="${COMMIT_SHA}" \
              --build-arg CREATE_DATE="${TIMESTAMP}" \
              --build-arg VERSION="${VERSION_CODE}" \
@@ -24,20 +25,20 @@ function _docker-build()
 function build-builder()
 {
     _docker-build --tag "${IMAGE}/builder:${EXPANSION}" \
-                  --target "builder" \
-                  --build-arg THREADS="8"
+                  --target "builder"
 }
 function build-runner()
 {
     _docker-build --tag "${IMAGE}/runner:${EXPANSION}"
 }
 
+readonly EXECUTABLE="${0}"
 readonly HELP_MSG="
 Allows you to build more easily the Docker images
  of CMaNGOS you'll need to run the server propertly.
 
 Usage:
-    ./build.sh [OPTIONS...]
+    ${EXECUTABLE} [OPTIONS...]
 
 Options:
     -e | --expansion \"classic\" | \"tbc\" | \"wotlk\"
@@ -46,7 +47,7 @@ Options:
         When not specified, the expansion
          is \"tbc\" by default.
 
-    -t | --target \"runner\" | \"builder\" | \"all\"
+    -x | --target \"runner\" | \"builder\" | \"all\"
         Specify the Docker image target to build.
         When not specified, the target
          is \"runner\" by default.
@@ -62,6 +63,12 @@ Options:
          as a default into the built Docker image.
         When not specified, the timezone
          is \"Europe/Rome\" by default.
+
+    -t | --threads <number>
+        Specify the number of threads that
+         will be used during the build process.
+        When not specified, the number of
+         threads is 2 by default.
 
     -C | --no-cache
         Force Docker to build the images
@@ -85,7 +92,7 @@ do
                 echo -e " ERROR!"
                 echo -e "  └ Invalid expansion specified: \"${2}\""
                 echo ""
-                echo " Run \"./build.sh --help\" for more information."
+                echo " Run \"${EXECUTABLE} --help\" for more information."
 
                 exit 2
             fi
@@ -94,14 +101,14 @@ do
 
             shift
             ;;
-        -t | --target)
+        -x | --target)
             if [[ "${2}" != "runner" ]] && [[ "${2}" != "builder" ]] && [[ "${2}" != "all" ]]
             then
                 echo ""
                 echo -e " ERROR!"
                 echo -e "  └ Invalid target specified: \"${2}\""
                 echo ""
-                echo " Run \"./build.sh --help\" for more information."
+                echo " Run \"${EXECUTABLE} --help\" for more information."
 
                 exit 3
             fi
@@ -117,6 +124,22 @@ do
             ;;
         -z | --timezone)
             readonly TIMEZONE="${2}"
+
+            shift
+            ;;
+        -t | --threads)
+            if [[ ! "${2}" =~ ^[0-9]+$ ]]
+            then
+                echo ""
+                echo -e " ERROR!"
+                echo -e "  └ Invalid threads number specified: \"${2}\""
+                echo ""
+                echo " Run \"${EXECUTABLE} --help\" for more information."
+
+                return 4
+            fi
+
+            readonly THREADS="${2}"
 
             shift
             ;;
@@ -136,7 +159,7 @@ do
             echo -e " ERROR!"
             echo -e "  └ Unknown option: \"${1}\""
             echo ""
-            echo " Run \"./build.sh --help\" for more information."
+            echo " Run \"${EXECUTABLE} --help\" for more information."
 
             exit 1
             ;;
@@ -171,9 +194,10 @@ readonly VERSION_CODE="1.0.0-develop+$(date -u +"%Y%m%d%H%M%S")"
 
 if [[ "${TARGET}" == "builder" ]] || [[ "${TARGET}" == "all" ]]
 then
-    build-builder
+    docker-build --tag "${IMAGE}/builder:${EXPANSION}" \
+                 --target "builder"
 fi
 if [[ "${TARGET}" == "runner" ]] || [[ "${TARGET}" == "all" ]]
 then
-    build-runner
+    docker-build --tag "${IMAGE}/runner:${EXPANSION}"
 fi
