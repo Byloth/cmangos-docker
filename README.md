@@ -1,6 +1,8 @@
 # [CMaNGOS](https://cmangos.net/) running on Docker ⚔
 
-[![Docker images build & release](https://github.com/Byloth/cmangos-docker/actions/workflows/build-n-release.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/build-n-release.yml)
+[![Classic build & release](https://github.com/Byloth/cmangos-docker/actions/workflows/classic-build-n-release.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/classic-build-n-release.yml)
+[![TBC build & release](https://github.com/Byloth/cmangos-docker/actions/workflows/tbc-build-n-release.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/tbc-build-n-release.yml)
+[![WotLK build & release](https://github.com/Byloth/cmangos-docker/actions/workflows/wotlk-build-n-release.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/wotlk-build-n-release.yml)
 
 A collection of Docker images ready-to-use to host your emulated private server for WoW wherever you want.
 
