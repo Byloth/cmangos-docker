@@ -28,11 +28,13 @@ jobs:
 
       - name: Definition of environmental variables
         run: |
-          echo BUILDER_IMAGE_REF="${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
-          echo BUILDER_IMAGE_TAG="${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_REF_SLUG }}" >> "${GITHUB_ENV}" && \
+          echo BUILDER_IMAGE_REF="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}-builder:${{ env.GITHUB_SHORT_SHA }}" \
+            >> "${GITHUB_ENV}" && \
+          echo BUILDER_IMAGE_TAG="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}-builder:${{ env.GITHUB_REF_SLUG }}" \
+            >> "${GITHUB_ENV}" && \
           \
-          echo BUILDER_IMAGE_LAST="${{ env.DOCKER_IMAGE }}/builder:latest" >> "${GITHUB_ENV}" && \
-          echo BUILDER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/builder:cache" >> "${GITHUB_ENV}"
+          echo BUILDER_IMAGE_LAST="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}-builder:latest" >> "${GITHUB_ENV}" && \
+          echo BUILDER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}-builder:cache" >> "${GITHUB_ENV}"
 
       - name: Pull the Docker cache images
         run: |
@@ -104,11 +106,13 @@ jobs:
         run: |
           echo BUILDER_IMAGE="${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
           \
-          echo RUNNER_IMAGE_REF="${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
-          echo RUNNER_IMAGE_TAG="${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" >> "${GITHUB_ENV}" && \
+          echo RUNNER_IMAGE_REF="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}:${{ env.GITHUB_SHORT_SHA }}" \
+            >> "${GITHUB_ENV}" && \
+          echo RUNNER_IMAGE_TAG="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}:${{ env.GITHUB_REF_SLUG }}" \
+            >> "${GITHUB_ENV}" && \
           \
-          echo RUNNER_IMAGE_LAST="${{ env.DOCKER_IMAGE }}/runner:latest" >> "${GITHUB_ENV}" && \
-          echo RUNNER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/runner:cache" >> "${GITHUB_ENV}"
+          echo RUNNER_IMAGE_LAST="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}:latest" >> "${GITHUB_ENV}" && \
+          echo RUNNER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}:cache" >> "${GITHUB_ENV}"
 
       - name: Pull the CMaNGOS builder image
         run: docker pull "${{ env.BUILDER_IMAGE }}"
