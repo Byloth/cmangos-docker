@@ -147,10 +147,10 @@ account set gmlevel [username] [0 to 3]
 
 - [ ] Adding the details of CMaNGOS and database version that generate the `.tar.gz` backup file right inside of it. 
 
-- [ ] Adding a GitHub Action to run an automatic Docker build on each commit, while also publishing the built Docker image.  
+- [x] Adding a GitHub Action to run an automatic Docker build on each commit, while also publishing the built Docker image.  
 This will allow anyone to simply download a ready-to-use Docker image, instead of building it on their machine.
 
-- [ ] Adding a Docker build argument that allows to specify the version (`classic`, `tbc`, `wotlk`) you want to build.  
+- [x] Adding a Docker build argument that allows to specify the version (`classic`, `tbc`, `wotlk`) you want to build.  
 Right now, the only supported version is **`tbc`**.
 
 - [ ] Adding as one or more specific Docker containers the application to easily manage the server, allowing new user to sign-up, view profiles, all player characters an so on...
