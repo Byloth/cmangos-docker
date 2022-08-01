@@ -33,7 +33,7 @@ jobs:
           echo BUILDER_IMAGE_TAG="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}-builder:${{ env.GITHUB_REF_SLUG }}" \
             >> "${GITHUB_ENV}" && \
           \
-          echo BUILDER_IMAGE_LAST="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}-builder:latest" >> "${GITHUB_ENV}" && \
+          echo BUILDER_IMAGE_LATEST="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}-builder:latest" >> "${GITHUB_ENV}" && \
           echo BUILDER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}-builder:cache" >> "${GITHUB_ENV}"
 
       - name: Pull the Docker cache images
@@ -46,9 +46,9 @@ jobs:
           then
             docker tag "${{ env.BUILDER_IMAGE_TAG }}" "${{ env.BUILDER_IMAGE_CACHE }}"
           
-          elif docker pull "${{ env.BUILDER_IMAGE_LAST }}"
+          elif docker pull "${{ env.BUILDER_IMAGE_LATEST }}"
           then
-            docker tag "${{ env.BUILDER_IMAGE_LAST }}" "${{ env.BUILDER_IMAGE_CACHE }}"
+            docker tag "${{ env.BUILDER_IMAGE_LATEST }}" "${{ env.BUILDER_IMAGE_CACHE }}"
           fi
 
       - name: Definition of build arguments
@@ -104,14 +104,15 @@ jobs:
 
       - name: Definition of environmental variables
         run: |
-          echo BUILDER_IMAGE="${{ env.DOCKER_IMAGE }}/builder:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
+          echo BUILDER_IMAGE="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}-builder:${{ env.GITHUB_SHORT_SHA }}" \
+            >> "${GITHUB_ENV}" && \
           \
           echo RUNNER_IMAGE_REF="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}:${{ env.GITHUB_SHORT_SHA }}" \
             >> "${GITHUB_ENV}" && \
           echo RUNNER_IMAGE_TAG="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}:${{ env.GITHUB_REF_SLUG }}" \
             >> "${GITHUB_ENV}" && \
           \
-          echo RUNNER_IMAGE_LAST="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}:latest" >> "${GITHUB_ENV}" && \
+          echo RUNNER_IMAGE_LATEST="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}:latest" >> "${GITHUB_ENV}" && \
           echo RUNNER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}:cache" >> "${GITHUB_ENV}"
 
       - name: Pull the CMaNGOS builder image
@@ -127,9 +128,9 @@ jobs:
           then
             docker tag "${{ env.RUNNER_IMAGE_TAG }}" "${{ env.RUNNER_IMAGE_CACHE }}"
           
-          elif docker pull "${{ env.RUNNER_IMAGE_LAST }}"
+          elif docker pull "${{ env.RUNNER_IMAGE_LATEST }}"
           then
-            docker tag "${{ env.RUNNER_IMAGE_LAST }}" "${{ env.RUNNER_IMAGE_CACHE }}"
+            docker tag "${{ env.RUNNER_IMAGE_LATEST }}" "${{ env.RUNNER_IMAGE_CACHE }}"
           fi
 
       - name: Definition of build arguments
@@ -161,5 +162,5 @@ jobs:
 
       - name: Push the Docker images
         run: |
-          docker push "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_REF_SLUG }}" & \
-          docker push "${{ env.DOCKER_IMAGE }}/runner:${{ env.GITHUB_SHORT_SHA }}"
+          docker push "${{ env.RUNNER_IMAGE_REF }}" & \
+          docker push "${{ env.RUNNER_IMAGE_TAG }}"
