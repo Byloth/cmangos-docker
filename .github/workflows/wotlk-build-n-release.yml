@@ -2,6 +2,8 @@ name: WotLK build & release
 on:
   push:
   workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
 
 jobs:
   wotlk-build-n-release:

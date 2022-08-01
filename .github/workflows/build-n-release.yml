@@ -82,6 +82,12 @@ jobs:
           docker push "${{ env.BUILDER_IMAGE_REF }}" && \
           docker push "${{ env.BUILDER_IMAGE_TAG }}"
 
+      - name: Push latest
+        if: github.ref == 'refs/head/master'
+        run: |
+          docker tag "${{ env.BUILDER_IMAGE_REF }}" "${{ env.BUILDER_IMAGE_LATEST }}" && \
+          docker push "${{ env.BUILDER_IMAGE_LATEST }}"
+
   runner-build:
     name: "`runner` building process"
     needs: builder-build
@@ -164,3 +170,9 @@ jobs:
         run: |
           docker push "${{ env.RUNNER_IMAGE_REF }}" & \
           docker push "${{ env.RUNNER_IMAGE_TAG }}"
+
+      - name: Push latest
+        if: github.ref == 'refs/head/master'
+        run: |
+          docker tag "${{ env.RUNNER_IMAGE_REF }}" "${{ env.RUNNER_IMAGE_LATEST }}" && \
+          docker push "${{ env.RUNNER_IMAGE_LATEST }}"
