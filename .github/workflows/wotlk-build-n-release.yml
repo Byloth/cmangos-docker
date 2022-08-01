@@ -1,0 +1,10 @@
+name: WotLK build & release
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  wotlk-build-n-release:
+    uses: ./.github/workflows/build-n-release.yml
+    with:
+      expansion: wotlk

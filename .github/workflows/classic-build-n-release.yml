@@ -1,0 +1,10 @@
+name: Classic build & release
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  classic-build-n-release:
+    uses: ./.github/workflows/build-n-release.yml
+    with:
+      expansion: classic
