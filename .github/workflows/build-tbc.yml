@@ -1,4 +1,4 @@
-name: TBC build & release
+name: TBC
 on:
   push:
   workflow_dispatch:
@@ -6,7 +6,8 @@ on:
     - cron: '0 6 * * *'
 
 jobs:
-  tbc-build-n-release:
-    uses: ./.github/workflows/build-n-release.yml
+  build-tbc:
+    name: TBC
+    uses: ./.github/workflows/template.yml
     with:
       expansion: tbc

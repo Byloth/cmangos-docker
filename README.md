@@ -1,8 +1,8 @@
 # [CMaNGOS](https://cmangos.net/) running on Docker ⚔
 
-[![Classic build & release](https://github.com/Byloth/cmangos-docker/actions/workflows/classic-build-n-release.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/classic-build-n-release.yml)
-[![TBC build & release](https://github.com/Byloth/cmangos-docker/actions/workflows/tbc-build-n-release.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/tbc-build-n-release.yml)
-[![WotLK build & release](https://github.com/Byloth/cmangos-docker/actions/workflows/wotlk-build-n-release.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/wotlk-build-n-release.yml)
+[![Classic](https://github.com/Byloth/cmangos-docker/actions/workflows/build-classic.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/build-classic.yml)
+[![TBC](https://github.com/Byloth/cmangos-docker/actions/workflows/build-tbc.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/build-tbc.yml)
+[![WotLK](https://github.com/Byloth/cmangos-docker/actions/workflows/build-wotlk.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/build-wotlk.yml)
 
 A collection of Docker images ready-to-use to host your emulated private server for WoW wherever you want.
 

@@ -1,4 +1,4 @@
-name: Classic build & release
+name: Classic
 on:
   push:
   workflow_dispatch:
@@ -6,7 +6,8 @@ on:
     - cron: '0 6 * * *'
 
 jobs:
-  classic-build-n-release:
-    uses: ./.github/workflows/build-n-release.yml
+  build-classic:
+    name: Classic
+    uses: ./.github/workflows/template.yml
     with:
       expansion: classic

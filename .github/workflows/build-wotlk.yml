@@ -1,4 +1,4 @@
-name: WotLK build & release
+name: WotLK
 on:
   push:
   workflow_dispatch:
@@ -6,7 +6,8 @@ on:
     - cron: '0 6 * * *'
 
 jobs:
-  wotlk-build-n-release:
-    uses: ./.github/workflows/build-n-release.yml
+  build-wotlk:
+    name: WotLK
+    uses: ./.github/workflows/template.yml
     with:
       expansion: wotlk
