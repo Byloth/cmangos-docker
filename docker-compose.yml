@@ -35,7 +35,7 @@ services:
       - 8085:8085
 
     volumes:
-      - mangosd_data:/opt/mangos/data:ro
+      - mangosd_data:/var/lib/mangos:ro
       - ./runner/config:/opt/mangos/conf:ro
 
   realmd:

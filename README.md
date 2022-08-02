@@ -1,6 +1,8 @@
 # [CMaNGOS](https://cmangos.net/) running on Docker ⚔
 
-[![Docker images build & release](https://github.com/Byloth/cmangos-docker/actions/workflows/build-n-release.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/build-n-release.yml)
+[![Classic build & release](https://github.com/Byloth/cmangos-docker/actions/workflows/classic-build-n-release.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/classic-build-n-release.yml)
+[![TBC build & release](https://github.com/Byloth/cmangos-docker/actions/workflows/tbc-build-n-release.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/tbc-build-n-release.yml)
+[![WotLK build & release](https://github.com/Byloth/cmangos-docker/actions/workflows/wotlk-build-n-release.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/wotlk-build-n-release.yml)
 
 A collection of Docker images ready-to-use to host your emulated private server for WoW wherever you want.
 
@@ -32,18 +34,8 @@ run your CMaNGOS server without need any further configuration.
 This may take a while, depending on your computer performance and your internet connection.  
 Please be patient.
 
-**CMaNGOS Builder**
-
 ```sh
-cd builder/
-./build.sh
-```
-
-**CMaNGOS Runner**
-
-```sh
-cd runner/
-./build.sh
+./build-server.sh --target all
 ```
 
 ### Extracting files from the WoW client
@@ -132,8 +124,7 @@ account set addon [username] [0 to 1]
 
 0. Basic version
 1. The Burning Crusade
-<!-- 2. Wrath of the Lich King -->
-
+2. Wrath of the Lich King
 
 #### Setting GM level for an account
 
@@ -158,10 +149,10 @@ account set gmlevel [username] [0 to 3]
 
 - [ ] Adding the details of CMaNGOS and database version that generate the `.tar.gz` backup file right inside of it. 
 
-- [ ] Adding a GitHub Action to run an automatic Docker build on each commit, while also publishing the built Docker image.  
+- [x] Adding a GitHub Action to run an automatic Docker build on each commit, while also publishing the built Docker image.  
 This will allow anyone to simply download a ready-to-use Docker image, instead of building it on their machine.
 
-- [ ] Adding a Docker build argument that allows to specify the version (`classic`, `tbc`, `wotlk`) you want to build.  
+- [x] Adding a Docker build argument that allows to specify the version (`classic`, `tbc`, `wotlk`) you want to build.  
 Right now, the only supported version is **`tbc`**.
 
 - [ ] Adding as one or more specific Docker containers the application to easily manage the server, allowing new user to sign-up, view profiles, all player characters an so on...

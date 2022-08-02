@@ -1,0 +1,12 @@
+name: Classic build & release
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
+
+jobs:
+  classic-build-n-release:
+    uses: ./.github/workflows/build-n-release.yml
+    with:
+      expansion: classic

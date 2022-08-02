@@ -39,7 +39,7 @@ function compose_mangosd_conf()
 {
     local MANGOS_DBCONN="${MANGOS_DBHOST};${MANGOS_DBPORT};${MANGOS_DBUSER};${MANGOS_DBPASS}"
 
-    cd /opt/mangos/etc
+    cd "${MANGOS_DIR}/etc"
     cp mangosd.conf.dist mangosd.conf
 
     _replace_conf "LoginDatabaseInfo" "\"${MANGOS_DBCONN};${MANGOS_REALMD_DBNAME}\"" mangosd.conf
@@ -56,7 +56,7 @@ function compose_realmd_conf()
 {
     local MANGOS_DBCONN="${MANGOS_DBHOST};${MANGOS_DBPORT};${MANGOS_DBUSER};${MANGOS_DBPASS}"
 
-    cd /opt/mangos/etc
+    cd "${MANGOS_DIR}/etc"
     cp realmd.conf.dist realmd.conf
 
     _replace_conf "LoginDatabaseInfo" "\"${MANGOS_DBCONN};${MANGOS_REALMD_DBNAME}\"" realmd.conf
@@ -92,13 +92,13 @@ function init_runner()
 
 function run_mangosd()
 {
-    cd /opt/mangos/bin
+    cd "${MANGOS_DIR}/bin"
 
     gosu mangos ./mangosd
 }
 function run_realmd()
 {
-    cd /opt/mangos/bin
+    cd "${MANGOS_DIR}/bin"
 
     gosu mangos ./realmd
 }
@@ -121,7 +121,7 @@ case "${1}" in
         run_realmd ${@}
         ;;
     *)
-        cd /home/mangos
+        cd "${HOME_DIR}"
 
         exec ${@}
         ;;

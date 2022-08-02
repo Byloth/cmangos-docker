@@ -1,0 +1,42 @@
+# Files created by OS
+#
+**/.DS_Store
+**/Desktop.ini
+
+# Files created by IDE
+#
+.idea/
+.vscode/
+
+*.code-workspace
+
+# Environmental files
+#
+**/.env
+
+# GIT files
+#
+.git/
+
+**/.gitignore
+
+# Docker & build files
+#
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Executable files
+#
+build-server.sh
+start-server.sh
+
+builder/run.sh
+runner/run.sh
+
+forward-port.ps1
+
+# Other project files
+#
+LICENSE
+README.md
