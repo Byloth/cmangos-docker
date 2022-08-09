@@ -1,13 +1,13 @@
-name: WotLK
+name: Build WotLK
 on:
   push:
   workflow_dispatch:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 4 * * *'
 
 jobs:
   build-wotlk:
-    name: WotLK
+    name: Build WotLK
     uses: ./.github/workflows/template.yml
     with:
       expansion: wotlk

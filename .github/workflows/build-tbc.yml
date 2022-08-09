@@ -1,13 +1,13 @@
-name: TBC
+name: Build TBC
 on:
   push:
   workflow_dispatch:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 4 * * *'
 
 jobs:
   build-tbc:
-    name: TBC
+    name: Build TBC
     uses: ./.github/workflows/template.yml
     with:
       expansion: tbc

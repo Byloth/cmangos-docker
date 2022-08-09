@@ -1,13 +1,13 @@
-name: Classic
+name: Build Classic
 on:
   push:
   workflow_dispatch:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 4 * * *'
 
 jobs:
   build-classic:
-    name: Classic
+    name: Build Classic
     uses: ./.github/workflows/template.yml
     with:
       expansion: classic
