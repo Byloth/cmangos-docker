@@ -8,8 +8,8 @@ readonly BASE_DIR="$(realpath "$(dirname "${0}")/..")"
 source "${BASE_DIR}/.env"
 
 readonly NAME="mangos-builder"
-readonly IMAGE="cmangos/builder"
-readonly VERSION="tbc"
+readonly IMAGE="ghcr.io/byloth/cmangos/tbc/builder"
+readonly VERSION="latest"
 
 readonly DATA_VOLUME="cmangos_mangosd_data"
 

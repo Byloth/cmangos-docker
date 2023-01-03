@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   mariadb:
-    image: mariadb:10.8
+    image: mariadb:10.10
     environment:
       MYSQL_ROOT_PASSWORD: root00
 
@@ -16,7 +16,7 @@ services:
       - ./database:/etc/mysql/conf.d:ro
 
   mangosd:
-    image: cmangos/runner:tbc
+    image: ghcr.io/byloth/cmangos/tbc:latest
     depends_on:
       - mariadb
 
@@ -39,7 +39,7 @@ services:
       - ./runner/config:/opt/mangos/conf:ro
 
   realmd:
-    image: cmangos/runner:tbc
+    image: ghcr.io/byloth/cmangos/tbc:latest
     depends_on:
       - mariadb
 

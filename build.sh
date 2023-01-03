@@ -178,7 +178,7 @@ then
 fi
 if [[ -z "${IMAGE}" ]]
 then
-    readonly IMAGE="cmangos"
+    readonly IMAGE="ghcr.io/byloth/cmangos/tbc"
 fi
 if [[ -z "${TIMEZONE}" ]]
 then
@@ -199,5 +199,5 @@ then
 fi
 if [[ "${TARGET}" == "runner" ]] || [[ "${TARGET}" == "all" ]]
 then
-    docker-build --tag "${IMAGE}/runner:${EXPANSION}"
+    docker-build --tag "${IMAGE}:${EXPANSION}"
 fi

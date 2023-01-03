@@ -8,6 +8,7 @@ A collection of Docker images ready-to-use to host your emulated private server 
 
 ## Summary
 
+- [Requirements](#requirements)
 - [Getting Started](#getting-started)
     - [Building all the required images](#building-all-the-required-images)
     - [Extracting files from the WoW client](#extracting-files-from-the-wow-client)
@@ -16,12 +17,16 @@ A collection of Docker images ready-to-use to host your emulated private server 
         - [Backing up the database](#backing-up-the-database)
         - [Restoring the database](#restoring-the-database)
         - [Updating the database](#updating-the-database)
-    - [Starting the server](#starting-the-server)
+    - [Run the server](#run-the-server)
     - [Creating a new account](#creating-a-new-account)
         - [Enabling expansion for an account](#enabling-expansion-for-an-account)
         - [Setting GM level for an account](#setting-gm-level-for-an-account)
     - [Stopping the server](#stopping-the-server)
 - [Roadmap](#roadmap)
+
+## Requirements
+
+`# TODO: Decently document the requirements...`
 
 ## Getting Started
 
@@ -35,7 +40,7 @@ This may take a while, depending on your computer performance and your internet 
 Please be patient.
 
 ```sh
-./build-server.sh --target all
+./build.sh --target all
 ```
 
 ### Extracting files from the WoW client
@@ -61,7 +66,7 @@ cd builder/
 
 #### Initializing the database
 
-`# TODO: write a decent description for here on...`
+`# TODO: Write a decent description for here on...`
 
 ```bash
 docker-compose up mariadb
@@ -104,10 +109,10 @@ cd builder/
 ./run.sh update-db
 ```
 
-### Starting the server
+### Run the server
 
 ```bash
-./start-server.sh
+./run-server.sh
 ```
 
 ### Creating a new account
@@ -147,12 +152,8 @@ account set gmlevel [username] [0 to 3]
 
 ## Roadmap
 
+- [ ] Improve the whole documentation.
+- [ ] Supporting correctly the database update process #3: `apply_core_update`.
 - [ ] Adding the details of CMaNGOS and database version that generate the `.tar.gz` backup file right inside of it. 
-
-- [x] Adding a GitHub Action to run an automatic Docker build on each commit, while also publishing the built Docker image.  
-This will allow anyone to simply download a ready-to-use Docker image, instead of building it on their machine.
-
-- [x] Adding a Docker build argument that allows to specify the version (`classic`, `tbc`, `wotlk`) you want to build.  
-Right now, the only supported version is **`tbc`**.
-
 - [ ] Adding as one or more specific Docker containers the application to easily manage the server, allowing new user to sign-up, view profiles, all player characters an so on...
+- [ ] Solve the random issue with GitHub Actions: `API rate limit exceeded for...` ([📝 Here the docs](https://docs.github.com/rest/overview/resources-in-the-rest-api#rate-limiting))

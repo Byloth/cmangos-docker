@@ -4,8 +4,8 @@
 set -e
 
 readonly NAME="mangos-runner"
-readonly IMAGE="cmangos/runner"
-readonly VERSION="tbc"
+readonly IMAGE="ghcr.io/byloth/cmangos/tbc"
+readonly VERSION="latest"
 
 readonly DATA_VOLUME="cmangos_mangosd_data"
 
