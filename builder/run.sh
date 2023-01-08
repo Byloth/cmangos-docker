@@ -7,7 +7,7 @@ readonly BASE_DIR="$(realpath "$(dirname "${0}")/..")"
 
 source "${BASE_DIR}/.env"
 
-readonly NAME="mangos-builder"
+readonly NAME="cmangos-builder"
 readonly IMAGE="ghcr.io/byloth/cmangos/tbc/builder"
 readonly VERSION="latest"
 

@@ -3,7 +3,7 @@
 
 set -e
 
-readonly NAME="mangos-runner"
+readonly NAME="cmangos-runner"
 readonly IMAGE="ghcr.io/byloth/cmangos/tbc"
 readonly VERSION="latest"
 
