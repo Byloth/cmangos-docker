@@ -1,10 +1,71 @@
-# [CMaNGOS](https://cmangos.net/) running on Docker ⚔
+<h1 align="center">
+  CMaNGOS running on Docker ⚔
+</h1>
 
-[![Build Classic](https://github.com/Byloth/cmangos-docker/actions/workflows/build-classic.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/build-classic.yml)
-[![Build TBC](https://github.com/Byloth/cmangos-docker/actions/workflows/build-tbc.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/build-tbc.yml)
-[![Build WotLK](https://github.com/Byloth/cmangos-docker/actions/workflows/build-wotlk.yml/badge.svg)](https://github.com/Byloth/cmangos-docker/actions/workflows/build-wotlk.yml)
+<div align="center">
+  <strong>Continued Massive Network Game Object Server</strong><br />
+  <sub>A collection of Docker images ready-to-use to host your emulated private server for WoW wherever you want.</sub>
+</div>
 
-A collection of Docker images ready-to-use to host your emulated private server for WoW wherever you want.
+<div align="center">
+  <a href="https://github.com/Byloth/cmangos-docker/actions/workflows/build-classic.yml"
+     title="Build Classic"
+    ><img src="https://github.com/Byloth/cmangos-docker/actions/workflows/build-classic.yml/badge.svg"
+          alt="Build Classic Badge" /></a>
+  <a href="https://github.com/Byloth/cmangos-docker/actions/workflows/build-tbc.yml"
+     title="Build TBC"
+    ><img src="https://github.com/Byloth/cmangos-docker/actions/workflows/build-tbc.yml/badge.svg"
+          alt="Build TBC Badge" /></a>
+  <a href="https://github.com/Byloth/cmangos-docker/actions/workflows/build-wotlk.yml"
+     title="Build WotLK"
+    ><img src="https://github.com/Byloth/cmangos-docker/actions/workflows/build-wotlk.yml/badge.svg"
+          alt="Build WotLK Badge" /></a>
+</div>
+
+<h3 align="center">
+  <a href="https://github.com/Byloth?tab=packages&repo_name=cmangos-docker"
+     title="CMaNGOS Docker images"
+    >Docker images</a>
+  <span> | </span>
+  <a href="https://github.com/Byloth/cmangos-docker/wiki"
+     title="CMaNGOS Docker Wiki"
+    >Wiki</a>
+  <span> | </span>
+  <a href="https://github.com/Byloth/cmangos-docker/issues/new/choose"
+     title="CMaNGOS Docker Support"
+    >Support</a>
+  <span> | </span>
+  <a href="https://github.com/Byloth/cmangos-docker/projects"
+     title="CMaNGOS Docker Roadmap"
+    >Roadmap</a>
+</h3>
+
+<div align="center">
+  <strong>External links to the CMaNGOS official project</strong><br />
+  <sup>
+    <a href="https://cmangos.net/"
+       title="CMaNGOS - Continued Massive Network Game Object Server"
+      >Website</a>
+    <span> | </span>
+    <a href="https://github.com/cmangos"
+       title="CMaNGOS on GitHub"
+      >GitHub</a>
+    <span> | </span>
+    <a href="https://discord.gg/Dgzerzb"
+       title="CMaNGOS on Discord"
+      >Discord</a>
+    <span> | </span>
+    <a href="https://github.com/cmangos/issues/wiki"
+       title="CMaNGOS Documentation"
+      >Documentation</a>
+    <span> | </span>
+    <a href="https://github.com/cmangos/issues/issues/new/choose"
+       title="CMaNGOS Support"
+      >Help</a>
+  </sup>
+</div>
+
+---
 
 ## Summary
 
@@ -22,7 +83,6 @@ A collection of Docker images ready-to-use to host your emulated private server 
         - [Enabling expansion for an account](#enabling-expansion-for-an-account)
         - [Setting GM level for an account](#setting-gm-level-for-an-account)
     - [Stopping the server](#stopping-the-server)
-- [Roadmap](#roadmap)
 
 ## Requirements
 
@@ -149,11 +209,3 @@ account set gmlevel [username] [0 to 3]
 ```
 
 `delay`: number of seconds
-
-## Roadmap
-
-- [ ] Improve the whole documentation.
-- [ ] Supporting correctly the database update process #3: `apply_core_update`.
-- [ ] Adding the details of CMaNGOS and database version that generate the `.tar.gz` backup file right inside of it. 
-- [ ] Adding as one or more specific Docker containers the application to easily manage the server, allowing new user to sign-up, view profiles, all player characters an so on...
-- [ ] Solve the random issue with GitHub Actions: `API rate limit exceeded for...` ([📝 Here the docs](https://docs.github.com/rest/overview/resources-in-the-rest-api#rate-limiting))
