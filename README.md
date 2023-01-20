@@ -67,8 +67,6 @@
   </sup>
 </div>
 
----
-
 ## Summary
 
 - [Requirements](#requirements)
