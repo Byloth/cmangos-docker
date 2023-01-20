@@ -7,6 +7,8 @@
   <sub>A collection of Docker images ready-to-use to host your emulated private server for WoW wherever you want.</sub>
 </div>
 
+<br />
+
 <div align="center">
   <a href="https://github.com/Byloth/cmangos-docker/actions/workflows/build-classic.yml"
      title="Build Classic"
