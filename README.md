@@ -1,5 +1,5 @@
 <h1 align="center">
-  CMaNGOS running on Docker ⚔
+  ⚔ CMaNGOS running on Docker 🐳
 </h1>
 
 <div align="center">
