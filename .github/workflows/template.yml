@@ -69,19 +69,14 @@ jobs:
           echo VERSION_CODE="1.0.0-nightly+$(date -u +"%Y%m%d")" >> "${GITHUB_ENV}"
 
       - name: Build the Docker images
-        env:
-          DOCKER_BUILDKIT: 1
-
         run: |
-          docker build --build-arg BUILDKIT_INLINE_CACHE=1 \
-                       --build-arg EXPANSION="${{ inputs.expansion }}" \
+          docker build --build-arg EXPANSION="${{ inputs.expansion }}" \
                        --build-arg MANGOS_SHA1="${{ env.MANGOS_SHA1 }}" \
                        --build-arg DATABASE_SHA1="${{ env.DATABASE_SHA1 }}" \
                        --build-arg THREADS="2" \
                        --build-arg COMMIT_SHA="${{ github.sha }}" \
                        --build-arg CREATE_DATE="${{ env.TIMESTAMP }}" \
                        --build-arg VERSION="${{ env.VERSION_CODE }}" \
-                       --cache-from "${{ env.BUILDER_IMAGE_CACHE }}" \
                        --tag "${{ env.BUILDER_IMAGE_REF }}" \
                        --tag "${{ env.BUILDER_IMAGE_TAG }}" \
                        --target "builder" \
@@ -170,19 +165,14 @@ jobs:
           echo VERSION_CODE="1.0.0-nightly+$(date -u +"%Y%m%d")" >> "${GITHUB_ENV}"
 
       - name: Build the Docker images
-        env:
-          DOCKER_BUILDKIT: 1
-
         run: |
-          docker build --build-arg BUILDKIT_INLINE_CACHE=1 \
+          docker build --build-arg EXPANSION="${{ inputs.expansion }}" \
                        --build-arg MANGOS_SHA1="${{ env.MANGOS_SHA1 }}" \
                        --build-arg DATABASE_SHA1="${{ env.DATABASE_SHA1 }}" \
                        --build-arg THREADS="2" \
                        --build-arg COMMIT_SHA="${{ github.sha }}" \
                        --build-arg CREATE_DATE="${{ env.TIMESTAMP }}" \
                        --build-arg VERSION="${{ env.VERSION_CODE }}" \
-                       --cache-from "${{ env.BUILDER_IMAGE }}" \
-                       --cache-from "${{ env.RUNNER_IMAGE_CACHE }}" \
                        --tag "${{ env.RUNNER_IMAGE_REF }}" \
                        --tag "${{ env.RUNNER_IMAGE_TAG }}" \
                        --target "runner" \
