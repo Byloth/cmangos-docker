@@ -69,8 +69,12 @@ jobs:
           echo VERSION_CODE="1.0.0-nightly+$(date -u +"%Y%m%d")" >> "${GITHUB_ENV}"
 
       - name: Build the Docker images
+        env:
+          DOCKER_BUILDKIT: 1
+
         run: |
-          docker build --build-arg EXPANSION="${{ inputs.expansion }}" \
+          docker build --build-arg BUILDKIT_INLINE_CACHE=1 \
+                       --build-arg EXPANSION="${{ inputs.expansion }}" \
                        --build-arg MANGOS_SHA1="${{ env.MANGOS_SHA1 }}" \
                        --build-arg DATABASE_SHA1="${{ env.DATABASE_SHA1 }}" \
                        --build-arg THREADS="2" \
@@ -166,8 +170,11 @@ jobs:
           echo VERSION_CODE="1.0.0-nightly+$(date -u +"%Y%m%d")" >> "${GITHUB_ENV}"
 
       - name: Build the Docker images
+        env:
+          DOCKER_BUILDKIT: 1
+
         run: |
-          docker build --build-arg EXPANSION="${{ inputs.expansion }}" \
+          docker build --build-arg BUILDKIT_INLINE_CACHE=1 \
                        --build-arg MANGOS_SHA1="${{ env.MANGOS_SHA1 }}" \
                        --build-arg DATABASE_SHA1="${{ env.DATABASE_SHA1 }}" \
                        --build-arg THREADS="2" \
