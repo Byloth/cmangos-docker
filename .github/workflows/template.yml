@@ -77,7 +77,7 @@ jobs:
                        --build-arg COMMIT_SHA="${{ github.sha }}" \
                        --build-arg CREATE_DATE="${{ env.TIMESTAMP }}" \
                        --build-arg VERSION="${{ env.VERSION_CODE }}" \
-                       --cache-from "type=registry,ref=${{ env.BUILDER_IMAGE_CACHE }}" \
+                       --cache-from "${{ env.BUILDER_IMAGE_CACHE }}" \
                        --tag "${{ env.BUILDER_IMAGE_REF }}" \
                        --tag "${{ env.BUILDER_IMAGE_TAG }}" \
                        --target "builder" \
@@ -174,8 +174,8 @@ jobs:
                        --build-arg COMMIT_SHA="${{ github.sha }}" \
                        --build-arg CREATE_DATE="${{ env.TIMESTAMP }}" \
                        --build-arg VERSION="${{ env.VERSION_CODE }}" \
-                       --cache-from "type=registry,ref=${{ env.BUILDER_IMAGE }}" \
-                       --cache-from "type=registry,ref=${{ env.RUNNER_IMAGE_CACHE }}" \
+                       --cache-from "${{ env.BUILDER_IMAGE }}" \
+                       --cache-from "${{ env.RUNNER_IMAGE_CACHE }}" \
                        --tag "${{ env.RUNNER_IMAGE_REF }}" \
                        --tag "${{ env.RUNNER_IMAGE_TAG }}" \
                        --target "runner" \
