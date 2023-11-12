@@ -27,9 +27,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Definition of environmental variables
+        env:
+          BUILDER_IMAGE: "${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}/builder"
+
         run: |
-          env BUILDER_IMAGE="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}/builder" && \
-          \
           echo BUILDER_IMAGE_REF="${BUILDER_IMAGE}:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
           echo BUILDER_IMAGE_TAG="${BUILDER_IMAGE}:${{ env.GITHUB_REF_SLUG }}" >> "${GITHUB_ENV}" && \
           \
@@ -118,18 +119,19 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Definition of environmental variables
+        env:
+          RUNNER_IMAGE: "${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}"
+
         run: |
-          env DOCKER_IMAGE="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}" && \
+          echo BUILDER_IMAGE="${RUNNER_IMAGE}/builder:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
           \
-          echo BUILDER_IMAGE="${DOCKER_IMAGE}/builder:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
+          echo RUNNER_IMAGE_REF="${RUNNER_IMAGE}:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
+          echo RUNNER_IMAGE_TAG="${RUNNER_IMAGE}:${{ env.GITHUB_REF_SLUG }}" >> "${GITHUB_ENV}" && \
           \
-          echo RUNNER_IMAGE_REF="${DOCKER_IMAGE}:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
-          echo RUNNER_IMAGE_TAG="${DOCKER_IMAGE}:${{ env.GITHUB_REF_SLUG }}" >> "${GITHUB_ENV}" && \
+          echo RUNNER_IMAGE_DAY="${RUNNER_IMAGE}:$(date -u +"%Y-%m-%d")" >> "${GITHUB_ENV}" && \
           \
-          echo RUNNER_IMAGE_DAY="${DOCKER_IMAGE}:$(date -u +"%Y-%m-%d")" >> "${GITHUB_ENV}" && \
-          \
-          echo RUNNER_IMAGE_LATEST="${DOCKER_IMAGE}:latest" >> "${GITHUB_ENV}" && \
-          echo RUNNER_IMAGE_CACHE="${DOCKER_IMAGE}:cache" >> "${GITHUB_ENV}"
+          echo RUNNER_IMAGE_LATEST="${RUNNER_IMAGE}:latest" >> "${GITHUB_ENV}" && \
+          echo RUNNER_IMAGE_CACHE="${RUNNER_IMAGE}:cache" >> "${GITHUB_ENV}"
 
       - name: Pull the CMaNGOS builder image
         run: docker pull "${{ env.BUILDER_IMAGE }}"
