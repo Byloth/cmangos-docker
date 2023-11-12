@@ -28,13 +28,15 @@ jobs:
 
       - name: Definition of environmental variables
         run: |
-          echo BUILDER_IMAGE_REF="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}/builder:${{ env.GITHUB_SHORT_SHA }}" \
-            >> "${GITHUB_ENV}" && \
-          echo BUILDER_IMAGE_TAG="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}/builder:${{ env.GITHUB_REF_SLUG }}" \
-            >> "${GITHUB_ENV}" && \
+          env BUILDER_IMAGE="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}/builder" && \
           \
-          echo BUILDER_IMAGE_LATEST="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}/builder:latest" >> "${GITHUB_ENV}" && \
-          echo BUILDER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}/builder:cache" >> "${GITHUB_ENV}"
+          echo BUILDER_IMAGE_REF="${BUILDER_IMAGE}:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
+          echo BUILDER_IMAGE_TAG="${BUILDER_IMAGE}:${{ env.GITHUB_REF_SLUG }}" >> "${GITHUB_ENV}" && \
+          \
+          echo BUILDER_IMAGE_DAY="${BUILDER_IMAGE}:$(date -u +"%Y-%m-%d")" >> "${GITHUB_ENV}" && \
+          \
+          echo BUILDER_IMAGE_LATEST="${BUILDER_IMAGE}:latest" >> "${GITHUB_ENV}" && \
+          echo BUILDER_IMAGE_CACHE="${BUILDER_IMAGE}:cache" >> "${GITHUB_ENV}"
 
       - name: Pull the Docker cache images
         run: |
@@ -45,7 +47,11 @@ jobs:
           elif docker pull "${{ env.BUILDER_IMAGE_TAG }}"
           then
             docker tag "${{ env.BUILDER_IMAGE_TAG }}" "${{ env.BUILDER_IMAGE_CACHE }}"
-          
+
+          elif docker pull "${{ env.BUILDER_IMAGE_DAY }}"
+          then
+            docker tag "${{ env.BUILDER_IMAGE_DAY }}" "${{ env.BUILDER_IMAGE_CACHE }}"
+
           elif docker pull "${{ env.BUILDER_IMAGE_LATEST }}"
           then
             docker tag "${{ env.BUILDER_IMAGE_LATEST }}" "${{ env.BUILDER_IMAGE_CACHE }}"
@@ -75,7 +81,7 @@ jobs:
                        --tag "${{ env.BUILDER_IMAGE_TAG }}" \
                        --target "builder" \
             \
-            .
+            . # There's a `dot` on this line!
 
       - name: Push the Docker images
         run: |
@@ -85,7 +91,10 @@ jobs:
       - name: Push latest Docker image
         if: ${{ github.ref == 'refs/heads/master' }}
         run: |
+          docker tag "${{ env.BUILDER_IMAGE_REF }}" "${{ env.BUILDER_IMAGE_DAY }}" && \
           docker tag "${{ env.BUILDER_IMAGE_REF }}" "${{ env.BUILDER_IMAGE_LATEST }}" && \
+          \
+          docker push "${{ env.BUILDER_IMAGE_DAY }}" && \
           docker push "${{ env.BUILDER_IMAGE_LATEST }}"
 
   build-runner:
@@ -110,16 +119,17 @@ jobs:
 
       - name: Definition of environmental variables
         run: |
-          echo BUILDER_IMAGE="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}/builder:${{ env.GITHUB_SHORT_SHA }}" \
-            >> "${GITHUB_ENV}" && \
+          env DOCKER_IMAGE="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}" && \
           \
-          echo RUNNER_IMAGE_REF="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}:${{ env.GITHUB_SHORT_SHA }}" \
-            >> "${GITHUB_ENV}" && \
-          echo RUNNER_IMAGE_TAG="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}:${{ env.GITHUB_REF_SLUG }}" \
-            >> "${GITHUB_ENV}" && \
+          echo BUILDER_IMAGE="${DOCKER_IMAGE}/builder:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
           \
-          echo RUNNER_IMAGE_LATEST="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}:latest" >> "${GITHUB_ENV}" && \
-          echo RUNNER_IMAGE_CACHE="${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}:cache" >> "${GITHUB_ENV}"
+          echo RUNNER_IMAGE_REF="${DOCKER_IMAGE}:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
+          echo RUNNER_IMAGE_TAG="${DOCKER_IMAGE}:${{ env.GITHUB_REF_SLUG }}" >> "${GITHUB_ENV}" && \
+          \
+          echo RUNNER_IMAGE_DAY="${DOCKER_IMAGE}:$(date -u +"%Y-%m-%d")" >> "${GITHUB_ENV}" && \
+          \
+          echo RUNNER_IMAGE_LATEST="${DOCKER_IMAGE}:latest" >> "${GITHUB_ENV}" && \
+          echo RUNNER_IMAGE_CACHE="${DOCKER_IMAGE}:cache" >> "${GITHUB_ENV}"
 
       - name: Pull the CMaNGOS builder image
         run: docker pull "${{ env.BUILDER_IMAGE }}"
@@ -133,7 +143,11 @@ jobs:
           elif docker pull "${{ env.RUNNER_IMAGE_TAG }}"
           then
             docker tag "${{ env.RUNNER_IMAGE_TAG }}" "${{ env.RUNNER_IMAGE_CACHE }}"
-          
+
+          elif docker pull "${{ env.RUNNER_IMAGE_DAY }}"
+          then
+            docker tag "${{ env.RUNNER_IMAGE_DAY }}" "${{ env.RUNNER_IMAGE_CACHE }}"
+
           elif docker pull "${{ env.RUNNER_IMAGE_LATEST }}"
           then
             docker tag "${{ env.RUNNER_IMAGE_LATEST }}" "${{ env.RUNNER_IMAGE_CACHE }}"
@@ -164,7 +178,7 @@ jobs:
                        --tag "${{ env.RUNNER_IMAGE_TAG }}" \
                        --target "runner" \
             \
-            .
+            . # There's a `dot` on this line!
 
       - name: Push the Docker images
         run: |
@@ -174,5 +188,8 @@ jobs:
       - name: Push latest Docker image
         if: ${{ github.ref == 'refs/heads/master' }}
         run: |
+          docker tag "${{ env.RUNNER_IMAGE_REF }}" "${{ env.RUNNER_IMAGE_DAY }}" && \
           docker tag "${{ env.RUNNER_IMAGE_REF }}" "${{ env.RUNNER_IMAGE_LATEST }}" && \
+          \
+          docker push "${{ env.RUNNER_IMAGE_DAY }}" & \
           docker push "${{ env.RUNNER_IMAGE_LATEST }}"
