@@ -35,6 +35,9 @@ ARG DATABASE_SHA1
 ENV HOME_DIR="/home/mangos"
 ENV MANGOS_DIR="${HOME_DIR}/mangos"
 ENV DATABASE_DIR="${HOME_DIR}/${EXPANSION}-db"
+
+COPY "builder/patches/${EXPANSION}" /tmp/patches
+
 RUN mkdir -p "${MANGOS_DIR}" \
              "${DATABASE_DIR}" \
  \
@@ -53,6 +56,9 @@ RUN mkdir -p "${MANGOS_DIR}" \
         cmangos-db \
  && cd cmangos-db \
  && git archive "${DATABASE_SHA1}" | tar xC "${DATABASE_DIR}" \
+ \
+ && cd "${DATABASE_DIR}" \
+ && git apply /tmp/patches/InstallFullDB.sh.patch \
  \
  && rm -rf /tmp/*
 

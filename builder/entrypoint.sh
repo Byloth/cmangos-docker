@@ -63,6 +63,7 @@ function update_world_db()
     cd "${DATABASE_DIR}"
 
     ./InstallFullDB.sh -World
+    ./InstallFullDB.sh -UpdateCore
 }
 
 # Main functions:
@@ -131,7 +132,7 @@ Options:
 
     -r | --realmd
         Backups the realmd database: \"$(info "${MANGOS_REALMD_DBNAME}")\".
-    
+
     -h | -? | --help
         Displays this help message.
 "
