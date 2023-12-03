@@ -16,10 +16,16 @@ services:
       - mariadb_data:/var/lib/mysql
       - ./database:/etc/mysql/conf.d:ro
 
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+
   mangosd:
     image: ghcr.io/byloth/cmangos/tbc:latest
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
 
     environment:
       MANGOS_DBHOST: mariadb
@@ -42,7 +48,8 @@ services:
   realmd:
     image: ghcr.io/byloth/cmangos/tbc:latest
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
 
     environment:
       MANGOS_DBHOST: mariadb
