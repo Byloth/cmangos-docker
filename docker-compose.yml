@@ -1,5 +1,4 @@
-name: cmangos
-version: "3.9"
+version: "3.0"
 services:
   mariadb:
     image: mariadb:10.10
@@ -10,7 +9,7 @@ services:
       - default
 
     ports:
-      - 3306:3306
+      - "3306:3306"
 
     volumes:
       - mariadb_data:/var/lib/mysql
@@ -39,7 +38,7 @@ services:
       - default
 
     ports:
-      - 8085:8085
+      - "8085:8085"
 
     volumes:
       - mangosd_data:/var/lib/mangos:ro
@@ -61,7 +60,7 @@ services:
       - default
 
     ports:
-      - 3724:3724
+      - "3724:3724"
 
   phpmyadmin:
     image: phpmyadmin:5.2
@@ -80,7 +79,7 @@ services:
       - default
 
     ports:
-      - 8080:80
+      - "8080:80"
 
 networks:
   default:
