@@ -25,7 +25,7 @@ function docker-build()
 readonly EXECUTABLE="${0}"
 readonly HELP_MSG="
 Allows you to build more easily the Docker images
- of CMaNGOS you'll need to run the server propertly.
+ of CMaNGOS you'll need to run the server properly.
 
 Usage:
     ${EXECUTABLE} [OPTIONS...]
@@ -49,7 +49,7 @@ Options:
          name is \"byloth/cmangos-\${EXPANSION}\" by default.
 
     -v | --version <version>
-        Scecify the tag that will be used
+        Specify the tag that will be used
          to name the built Docker image.
         When not specified, the tag
          is \"develop\" by default.
@@ -73,7 +73,7 @@ Options:
     -p | --pull
         Force Docker to pull the latest core
          image from DockerHub before building.
-    
+
     -h | -? | --help
         Displays this help message.
 "
