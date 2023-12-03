@@ -45,6 +45,7 @@ RUN mkdir -p "${MANGOS_DIR}" \
  && git clone "https://github.com/cmangos/mangos-${EXPANSION}.git" \
             --branch "master" \
             --single-branch \
+            --depth 100 \
         cmangos-mangos \
  && cd cmangos-mangos \
  && git archive "${MANGOS_SHA1}" | tar xC "${MANGOS_DIR}" \
@@ -53,6 +54,7 @@ RUN mkdir -p "${MANGOS_DIR}" \
  && git clone "https://github.com/cmangos/${EXPANSION}-db.git" \
             --branch "master" \
             --single-branch \
+            --depth 100 \
         cmangos-db \
  && cd cmangos-db \
  && git archive "${DATABASE_SHA1}" | tar xC "${DATABASE_DIR}" \
