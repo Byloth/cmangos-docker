@@ -62,25 +62,6 @@ services:
     ports:
       - "3724:3724"
 
-  phpmyadmin:
-    image: phpmyadmin:5.2
-    depends_on:
-      - mariadb
-
-    profiles:
-      - debug
-
-    environment:
-      PMA_HOST: mariadb
-      PMA_USER: root
-      PMA_PASSWORD: root00
-
-    networks:
-      - default
-
-    ports:
-      - "8080:80"
-
 networks:
   default:
 
