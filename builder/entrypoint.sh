@@ -7,7 +7,7 @@ set -e
 #
 function echoerr()
 {
-    echo "${@}" >&2
+    echo ${@} >&2
 }
 
 function success()
@@ -52,18 +52,16 @@ function mysql_dump()
 
 # Sub-functions:
 #
-function init_world_db()
-{
-    cd "${DATABASE_DIR}"
-
-    ./InstallFullDB.sh -InstallAll "${MYSQL_SUPERUSER}" "${MYSQL_SUPERPASS}" DeleteAll
-}
 function update_world_db()
 {
     cd "${DATABASE_DIR}"
 
-    ./InstallFullDB.sh -World
-    ./InstallFullDB.sh -UpdateCore
+    if [[ "${1}" == "--clear" ]]
+    then
+        ./InstallFullDB.sh -World
+    else
+        ./InstallFullDB.sh -UpdateCore
+    fi
 }
 
 # Main functions:
@@ -98,15 +96,29 @@ function extract_resources_from_client()
 }
 function init_db()
 {
-    cd "${MANGOS_DIR}/sql"
+    cd "${DATABASE_DIR}"
 
-    mysql_execute < create/db_create_mysql.sql
-    mysql_execute "${MANGOS_WORLD_DBNAME}" < base/mangos.sql
-    mysql_execute "${MANGOS_CHARACTERS_DBNAME}" < base/characters.sql
-    mysql_execute "${MANGOS_LOGS_DBNAME}" < base/logs.sql
-    mysql_execute "${MANGOS_REALMD_DBNAME}" < base/realmd.sql
+    echo ""
+    echo "This procedure will create all the databases required by the server"
+    echo " to run properly and will initialize them with the default data."
+    echo ""
+    echo -e " $(warning "WARNING!" --underline)"
+    echo -e "  $(warning "└") Please note that, if you have already initialized the databases before,"
+                 echo -e "     this procedure will prune $(info "ALL") of your data and"
+                 echo -e "     they will be lost $(info "FOREVER") (it's a very long time)!"
+    echo ""
+    read -p "Are you sure to continue? [N]: " ANSWER
 
-    init_world_db
+    if [[ "${ANSWER}" == "y" ]] || [[ "${ANSWER}" == "Y" ]]
+    then
+        echo -e " └ Please, wait... Initializing databases..."
+        echo ""
+        echo -e " --------------------------------------"
+
+        ./InstallFullDB.sh -InstallAll "${MYSQL_SUPERUSER}" "${MYSQL_SUPERPASS}" DeleteAll
+    else
+        echo -e " └ Ok, no problem! Databases have been left untouched."
+    fi
 }
 function backup_db()
 {
@@ -269,22 +281,40 @@ function restore_db()
 }
 function update_db()
 {
-    echo ""
-    echo -e " $(warning "WARNING!" --underline)"
-    echo -e "  $(warning "└") This procedure will prune all customized data you"
-    echo -e "     may have loaded into your \"$(info "${MANGOS_WORLD_DBNAME}")\" database."
-    echo -e ""
-    read -p "Are you sure to continue? [N]: " ANSWER
-
-    if [[ "${ANSWER}" == "y" ]] || [[ "${ANSWER}" == "Y" ]]
+    if [[ -n "${1}" ]]
     then
-        echo -e " └ Please, wait... Updating database..."
-        echo -e ""
-        echo -e " --------------------------------------"
+        if [[ "${1}" == "--clear" ]]
+        then
+            echo ""
+            echo -e " $(warning "WARNING!" --underline)"
+            echo -e "  $(warning "└") This procedure will prune all customized data you"
+            echo -e "     may have loaded into your \"$(info "${MANGOS_WORLD_DBNAME}")\" database."
+            echo ""
+            read -p "Are you sure to continue? [N]: " ANSWER
 
-        update_world_db
+            if [[ "${ANSWER}" == "y" ]] || [[ "${ANSWER}" == "Y" ]]
+            then
+                echo -e " └ Please, wait... Updating database..."
+                echo ""
+                echo -e " --------------------------------------"
+
+                update_world_db --clear
+            else
+                echo -e " └ Ok, no problem! Database have been left untouched."
+            fi
+        else
+            echoerr ""
+            echoerr -e " $(error "ERROR!" --underline)"
+            echoerr -e "  $(error "└") Unknown option: \"$(info "${1}")\""
+
+            # TODO: Add the help message.
+            # echoerr ""
+            # echoerr " Run \"$(info "update-db --help")\" for more information."
+
+            exit 1
+        fi
     else
-        echo -e " └ Ok, no problem! Database have been left untouched."
+        update_world_db
     fi
 }
 
@@ -319,7 +349,7 @@ case "${1}" in
     update-db)
         shift
 
-        update_db
+        update_db ${@}
         ;;
     *)
         cd "${HOME_DIR}"
