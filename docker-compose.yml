@@ -10,16 +10,22 @@ services:
       - default
 
     ports:
-      - 3306:3306
+      - "3306:3306"
 
     volumes:
       - mariadb_data:/var/lib/mysql
       - ./database:/etc/mysql/conf.d:ro
 
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      retries: 10
+      timeout: 20s
+
   mangosd:
     image: ghcr.io/byloth/cmangos/tbc:latest
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
 
     environment:
       MANGOS_DBHOST: mariadb
@@ -33,7 +39,7 @@ services:
       - default
 
     ports:
-      - 8085:8085
+      - "8085:8085"
 
     volumes:
       - mangosd_data:/var/lib/mangos:ro
@@ -42,7 +48,8 @@ services:
   realmd:
     image: ghcr.io/byloth/cmangos/tbc:latest
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
 
     environment:
       MANGOS_DBHOST: mariadb
@@ -54,7 +61,7 @@ services:
       - default
 
     ports:
-      - 3724:3724
+      - "3724:3724"
 
   phpmyadmin:
     image: phpmyadmin:5.2
@@ -73,7 +80,7 @@ services:
       - default
 
     ports:
-      - 8080:80
+      - "8080:80"
 
 networks:
   default:
