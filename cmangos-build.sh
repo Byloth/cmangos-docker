@@ -12,8 +12,6 @@ function docker-build()
              \
              --build-arg TIMEZONE="${TIMEZONE}" \
              --build-arg EXPANSION="${EXPANSION}" \
-             --build-arg MANGOS_SHA1="${MANGOS_SHA1}" \
-             --build-arg DATABASE_SHA1="${DATABASE_SHA1}" \
              --build-arg THREADS="${THREADS}" \
              --build-arg COMMIT_SHA="${COMMIT_SHA}" \
              --build-arg CREATE_DATE="${TIMESTAMP}" \
@@ -25,7 +23,7 @@ function docker-build()
 readonly EXECUTABLE="${0}"
 readonly HELP_MSG="
 Allows you to build more easily the Docker images
- of CMaNGOS you'll need to run the server propertly.
+ of CMaNGOS you'll need to run the server properly.
 
 Usage:
     ${EXECUTABLE} [OPTIONS...]
@@ -49,7 +47,7 @@ Options:
          name is \"byloth/cmangos-\${EXPANSION}\" by default.
 
     -v | --version <version>
-        Scecify the tag that will be used
+        Specify the tag that will be used
          to name the built Docker image.
         When not specified, the tag
          is \"develop\" by default.
@@ -73,7 +71,7 @@ Options:
     -p | --pull
         Force Docker to pull the latest core
          image from DockerHub before building.
-    
+
     -h | -? | --help
         Displays this help message.
 "
@@ -193,9 +191,6 @@ if [[ -z "${THREADS}" ]]
 then
     readonly THREADS="2"
 fi
-
-readonly MANGOS_SHA1="b36a1489df0ea5adadc9b900ffbe2d814667eb36"
-readonly DATABASE_SHA1="75ded71eac9e16ff4f2d333ba3ea92163129e19e"
 
 readonly COMMIT_SHA="$(git log -1 --format="%H")"
 readonly TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"

@@ -30,8 +30,8 @@ RUN apt-get update \
            /tmp/*
 
 ARG EXPANSION
-ARG MANGOS_SHA1
-ARG DATABASE_SHA1
+ARG MANGOS_SHA1="latest"
+ARG DATABASE_SHA1="latest"
 ENV HOME_DIR="/home/mangos"
 ENV MANGOS_DIR="${HOME_DIR}/mangos"
 ENV DATABASE_DIR="${HOME_DIR}/${EXPANSION}-db"
@@ -42,20 +42,38 @@ RUN mkdir -p "${MANGOS_DIR}" \
              "${DATABASE_DIR}" \
  \
  && cd /tmp \
- && git clone "https://github.com/cmangos/mangos-${EXPANSION}.git" \
-            --branch "master" \
-            --single-branch \
-        cmangos-mangos \
- && cd cmangos-mangos \
- && git archive "${MANGOS_SHA1}" | tar xC "${MANGOS_DIR}" \
+ && if [ "${MANGOS_SHA1}" = "latest" ]; \
+    then \
+        git clone "https://github.com/cmangos/mangos-${EXPANSION}.git" \
+                --branch "master" \
+                --single-branch \
+                --depth 1 \
+           "${MANGOS_DIR}"; \
+    else \
+        git clone "https://github.com/cmangos/mangos-${EXPANSION}.git" \
+                --branch "master" \
+                --single-branch \
+            cmangos-mangos \
+     && cd cmangos-mangos \
+     && git archive "${MANGOS_SHA1}" | tar xC "${MANGOS_DIR}"; \
+    fi \
  \
  && cd /tmp \
- && git clone "https://github.com/cmangos/${EXPANSION}-db.git" \
-            --branch "master" \
-            --single-branch \
-        cmangos-db \
- && cd cmangos-db \
- && git archive "${DATABASE_SHA1}" | tar xC "${DATABASE_DIR}" \
+ && if [ "${DATABASE_SHA1}" = "latest" ]; \
+    then \
+        git clone "https://github.com/cmangos/${EXPANSION}-db.git" \
+                --branch "master" \
+                --single-branch \
+                --depth 1 \
+            "${DATABASE_DIR}"; \
+    else \
+        git clone "https://github.com/cmangos/${EXPANSION}-db.git" \
+                --branch "master" \
+                --single-branch \
+            cmangos-db \
+     && cd cmangos-db \
+     && git archive "${DATABASE_SHA1}" | tar xC "${DATABASE_DIR}"; \
+    fi \
  \
  && cd "${DATABASE_DIR}" \
  && git apply /tmp/patches/InstallFullDB.sh.patch \
