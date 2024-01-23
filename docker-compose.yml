@@ -36,7 +36,7 @@ services:
       - "8085:8085"
 
     volumes:
-      - mangosd_data:/var/lib/mangos:ro
+      - cmangos_mangosd_data:/var/lib/mangos:ro
       - ./runner/config:/opt/mangos/conf:ro
 
   realmd:
@@ -55,6 +55,9 @@ services:
 
     ports:
       - "3724:3724"
+
+    volumes:
+      - cmangos_mangosd_data:/var/lib/mangos:ro
 
   phpmyadmin:
     image: phpmyadmin:5.2
@@ -80,4 +83,5 @@ networks:
 
 volumes:
   mariadb_data:
-  mangosd_data:
+  cmangos_mangosd_data:
+    external: true

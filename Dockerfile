@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 AS builder
+FROM ubuntu:22.04 AS builder
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
@@ -15,6 +15,7 @@ RUN apt-get update \
         build-essential \
         ca-certificates \
         cmake \
+        g++-12 \
         git-core \
         libboost-filesystem-dev \
         libboost-program-options-dev \
@@ -25,6 +26,11 @@ RUN apt-get update \
         libmariadb-dev-compat \
         libssl-dev \
         mariadb-client \
+ \
+ && update-alternatives --install /usr/bin/gcc gcc \
+                                  /usr/bin/gcc-12 12 \
+                        --slave /usr/bin/g++ g++ \
+        /usr/bin/g++-12 \
  \
  && rm -rf /var/lib/apt/lists/* \
            /tmp/*
@@ -158,7 +164,7 @@ LABEL "net.cmangos.${EXPANSION}-db.revision"="${DATABASE_SHA1}"
 LABEL "net.cmangos.${EXPANSION}-db.source"="https://github.com/cmangos/${EXPANSION}-db"
 LABEL "net.cmangos.${EXPANSION}-db.url"="https://github.com/cmangos/${EXPANSION}-db"
 
-FROM ubuntu:20.04 AS runner
+FROM ubuntu:22.04 AS runner
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
@@ -174,7 +180,7 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends \
         gosu \
         libmariadb-dev \
-        libssl1.1 \
+        libssl3 \
         wait-for-it \
  \
  && rm -rf /var/lib/apt/lists/* \
