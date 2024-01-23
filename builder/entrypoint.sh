@@ -52,15 +52,15 @@ function mysql_dump()
 
 # Sub-functions:
 #
-function update_world_db()
+function install_updates()
 {
     cd "${DATABASE_DIR}"
 
-    if [[ "${1}" == "--clear" ]]
+    ./InstallFullDB.sh -UpdateCore
+
+    if [[ "${1}" == "--world" ]]
     then
         ./InstallFullDB.sh -World
-    else
-        ./InstallFullDB.sh -UpdateCore
     fi
 }
 
@@ -281,40 +281,75 @@ function restore_db()
 }
 function update_db()
 {
+    readonly HELP_MSG="
+Updates databases by applying the latest changes
+ to the database structure and default data.
+Dy default, this is a non-destructive procedure,
+ so any custom data you may have loaded into
+ your \"$(info "${MANGOS_WORLD_DBNAME}")\" database will remain intact.
+
+Unfortunately, however, sometimes this plain update procedure
+ isn't enough to apply all the changes required by
+ the new version of the server to run properly.
+In these cases, you can use the \"$(info "--world")\" option to
+ perform a \"deeper\" update procedure to solve the issue.
+
+Please note that this more \"aggressive\" update procedure
+ will prune any custom data from the \"$(info "${MANGOS_WORLD_DBNAME}")\" database
+ and will restore the default data shipped with the server.
+If, however, you use an original version of the database
+ and have never customized any data, you can safely use
+ this option without any fear. No data will be lost.
+
+Usage:
+    update-db [OPTIONS...]
+
+Options:
+    -w | --world
+        Updates the world database: \"$(info "${MANGOS_WORLD_DBNAME}")\".
+
+    -h | -? | --help
+        Displays this help message.
+"
     if [[ -n "${1}" ]]
     then
-        if [[ "${1}" == "--clear" ]]
-        then
-            echo ""
-            echo -e " $(warning "WARNING!" --underline)"
-            echo -e "  $(warning "└") This procedure will prune all customized data you"
-            echo -e "     may have loaded into your \"$(info "${MANGOS_WORLD_DBNAME}")\" database."
-            echo ""
-            read -p "Are you sure to continue? [N]: " ANSWER
-
-            if [[ "${ANSWER}" == "y" ]] || [[ "${ANSWER}" == "Y" ]]
-            then
-                echo -e " └ Please, wait... Updating database..."
+        case "${1}" in
+            -w | --world)
                 echo ""
-                echo -e " --------------------------------------"
+                echo -e " $(warning "WARNING!" --underline)"
+                echo -e "  $(warning "└") This procedure will prune all custom data you"
+                echo -e "     may have loaded into your \"$(info "${MANGOS_WORLD_DBNAME}")\" database."
+                echo ""
+                read -p "Are you sure to continue? [N]: " ANSWER
 
-                update_world_db --clear
-            else
-                echo -e " └ Ok, no problem! Database have been left untouched."
-            fi
-        else
-            echoerr ""
-            echoerr -e " $(error "ERROR!" --underline)"
-            echoerr -e "  $(error "└") Unknown option: \"$(info "${1}")\""
+                if [[ "${ANSWER}" == "y" ]] || [[ "${ANSWER}" == "Y" ]]
+                then
+                    echo -e " └ Please, wait... Updating database..."
+                    echo ""
+                    echo -e " --------------------------------------"
 
-            # TODO: Add the help message.
-            # echoerr ""
-            # echoerr " Run \"$(info "update-db --help")\" for more information."
+                    install_updates --world
+                else
+                    echo -e " └ Ok, no problem! Database have been left untouched."
+                fi
+                ;;
+            -h | -? | --help)
+                echo -e "${HELP_MSG}"
 
-            exit 1
-        fi
+                exit 0
+                ;;
+            *)
+                echoerr ""
+                echoerr -e " $(error "ERROR!" --underline)"
+                echoerr -e "  $(error "└") Unknown option: \"$(info "${1}")\""
+                echoerr ""
+                echoerr " Run \"$(info "update-db --help")\" for more information."
+
+                exit 1
+                ;;
+        esac
     else
-        update_world_db
+        install_updates
     fi
 }
 
