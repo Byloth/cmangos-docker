@@ -2,7 +2,7 @@ name: cmangos
 version: "3.9"
 services:
   mariadb:
-    image: mariadb:10.10
+    image: mariadb:11.2
     environment:
       MYSQL_ROOT_PASSWORD: root00
 
@@ -16,16 +16,10 @@ services:
       - mariadb_data:/var/lib/mysql
       - ./database:/etc/mysql/conf.d:ro
 
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      retries: 10
-      timeout: 20s
-
   mangosd:
     image: ghcr.io/byloth/cmangos/tbc:latest
     depends_on:
-      mariadb:
-        condition: service_healthy
+      - mariadb
 
     environment:
       MANGOS_DBHOST: mariadb
@@ -48,8 +42,7 @@ services:
   realmd:
     image: ghcr.io/byloth/cmangos/tbc:latest
     depends_on:
-      mariadb:
-        condition: service_healthy
+      - mariadb
 
     environment:
       MANGOS_DBHOST: mariadb
