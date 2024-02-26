@@ -73,7 +73,7 @@ function extract_resources_from_client()
     cp * "${HOME_DIR}/wow-client/"
     cd "${HOME_DIR}/wow-client"
 
-    ./ExtractResources.sh a
+    ./ExtractResources.sh ${@}
 
     mv Cameras "${VOLUME_DIR}/Cameras"
     mv dbc "${VOLUME_DIR}/dbc"
@@ -359,7 +359,7 @@ case "${1}" in
     extract)
         shift
 
-        extract_resources_from_client
+        extract_resources_from_client ${@}
         ;;
     init-db)
         shift
