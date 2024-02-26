@@ -73,7 +73,7 @@ function extract_resources_from_client()
     cp * "${HOME_DIR}/wow-client/"
     cd "${HOME_DIR}/wow-client"
 
-    ./ExtractResources.sh
+    ./ExtractResources.sh a
 
     mv Cameras "${VOLUME_DIR}/Cameras"
     mv dbc "${VOLUME_DIR}/dbc"
