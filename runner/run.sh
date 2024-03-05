@@ -16,7 +16,7 @@ else
     readonly TTY="-i"
 fi
 
-docker run "${TTY}" \
+docker run ${TTY} \
            --name "${NAME}" \
            --rm \
            -e MANGOS_DBHOST="172.17.0.1" \

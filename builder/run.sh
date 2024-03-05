@@ -20,7 +20,7 @@ else
     readonly TTY="-i"
 fi
 
-docker run "${TTY}" \
+docker run ${TTY} \
            --name "${NAME}" \
            --rm \
            -e MYSQL_SUPERUSER="root" \
