@@ -4,7 +4,7 @@
 
 <div align="center">
   <strong>Continued Massive Network Game Object Server</strong><br />
-  <sub>A collection of Docker images ready-to-use to host your emulated private server for WoW wherever you want.</sub>
+  <sub>A collection of ready-to-use Docker images to host your WoW emulated private server wherever you want.</sub>
 </div>
 
 <br />
