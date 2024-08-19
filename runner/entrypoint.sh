@@ -69,8 +69,8 @@ function compose_realmd_conf()
 
 function set_timezone()
 {
-    ln -snf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime
-    echo "${TIMEZONE}" > /etc/timezone
+    ln -snf "/usr/share/zoneinfo/${TZ}" /etc/localtime
+    echo "${TZ}" > /etc/timezone
 
     dpkg-reconfigure --frontend noninteractive tzdata &> /dev/null
 }

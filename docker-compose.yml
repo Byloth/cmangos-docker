@@ -1,8 +1,7 @@
 name: cmangos
-version: "3.9"
 services:
   mariadb:
-    image: mariadb:11.2
+    image: mariadb:11.5
     environment:
       MYSQL_ROOT_PASSWORD: root00
 
@@ -21,6 +20,7 @@ services:
     depends_on:
       - mariadb
 
+    env_file: .env
     environment:
       MANGOS_DBHOST: mariadb
       MANGOS_DBUSER: mangos
@@ -44,6 +44,7 @@ services:
     depends_on:
       - mariadb
 
+    env_file: .env
     environment:
       MANGOS_DBHOST: mariadb
       MANGOS_DBUSER: mangos

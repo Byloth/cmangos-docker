@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 AS builder
+FROM ubuntu:24.04 AS builder
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
@@ -164,7 +164,7 @@ LABEL "net.cmangos.${EXPANSION}-db.revision"="${DATABASE_SHA1}"
 LABEL "net.cmangos.${EXPANSION}-db.source"="https://github.com/cmangos/${EXPANSION}-db"
 LABEL "net.cmangos.${EXPANSION}-db.url"="https://github.com/cmangos/${EXPANSION}-db"
 
-FROM ubuntu:22.04 AS runner
+FROM ubuntu:24.04 AS runner
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
