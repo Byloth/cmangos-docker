@@ -16,7 +16,7 @@ services:
       - ./database:/etc/mysql/conf.d:ro
 
   mangosd:
-    image: ghcr.io/byloth/cmangos/tbc:latest
+    image: ghcr.io/byloth/cmangos/${WOW_VERSION}:latest
     depends_on:
       - mariadb
 
@@ -40,7 +40,7 @@ services:
       - ./runner/config:/opt/mangos/conf:ro
 
   realmd:
-    image: ghcr.io/byloth/cmangos/tbc:latest
+    image: ghcr.io/byloth/cmangos/${WOW_VERSION}:latest
     depends_on:
       - mariadb
 

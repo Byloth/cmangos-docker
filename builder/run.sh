@@ -4,11 +4,10 @@
 set -e
 
 readonly BASE_DIR="$(realpath "$(dirname "${0}")/..")"
-
 source "${BASE_DIR}/.env"
 
 readonly NAME="cmangos-builder"
-readonly IMAGE="ghcr.io/byloth/cmangos/tbc/builder"
+readonly IMAGE="ghcr.io/byloth/cmangos/${WOW_VERSION}/builder"
 readonly VERSION="latest"
 
 readonly DATA_VOLUME="cmangos_mangosd_data"

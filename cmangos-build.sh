@@ -3,6 +3,9 @@
 
 set -e
 
+readonly BASE_DIR="$(realpath "$(dirname "${0}")")"
+source "${BASE_DIR}/.env"
+
 function docker-build()
 {
     docker build ${@} \
@@ -38,13 +41,13 @@ Options:
         Specify the latest game expansion
          that CMaNGOS will support.
         When not specified, the expansion
-         is \"tbc\" by default.
+         is \"${WOW_VERSION}\" by default.
 
     -i | --image <name>
         Specify the repository that will be
          used to name the built Docker image.
         When not specified, the prefix
-         name is \"byloth/cmangos-\${EXPANSION}\" by default.
+         name is \"byloth/cmangos-${WOW_VERSION}\" by default.
 
     -v | --version <version>
         Specify the tag that will be used
@@ -62,7 +65,7 @@ Options:
         Specify the number of threads that
          will be used during the build process.
         When not specified, the number of
-         threads is 2 by default.
+         threads is 4 by default.
 
     -C | --no-cache
         Force Docker to build the images
@@ -173,7 +176,7 @@ then
 fi
 if [[ -z "${EXPANSION}" ]]
 then
-    readonly EXPANSION="tbc"
+    readonly EXPANSION="${WOW_VERSION}"
 fi
 if [[ -z "${IMAGE}" ]]
 then
@@ -189,7 +192,7 @@ then
 fi
 if [[ -z "${THREADS}" ]]
 then
-    readonly THREADS="2"
+    readonly THREADS="4"
 fi
 
 readonly COMMIT_SHA="$(git log -1 --format="%H")"
