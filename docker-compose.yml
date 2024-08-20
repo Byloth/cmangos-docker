@@ -3,7 +3,7 @@ services:
   mariadb:
     image: mariadb:11.5
     environment:
-      MYSQL_ROOT_PASSWORD: root00
+      MYSQL_ROOT_PASSWORD: "${MYSQL_SUPERPASS}"
 
     networks:
       - default
@@ -16,15 +16,15 @@ services:
       - ./database:/etc/mysql/conf.d:ro
 
   mangosd:
-    image: ghcr.io/byloth/cmangos/${WOW_VERSION}:latest
+    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:latest"
     depends_on:
       - mariadb
 
-    env_file: .env
     environment:
       MANGOS_DBHOST: mariadb
-      MANGOS_DBUSER: mangos
-      MANGOS_DBPASS: mangos00
+      MANGOS_DBUSER: "${MANGOS_DBUSER}"
+      MANGOS_DBPASS: "${MANGOS_DBPASS}"
+      TZ: "${WOW_TIMEZONE}"
 
     command: mangosd
     stdin_open: true
@@ -40,15 +40,15 @@ services:
       - ./runner/config:/opt/mangos/conf:ro
 
   realmd:
-    image: ghcr.io/byloth/cmangos/${WOW_VERSION}:latest
+    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:latest"
     depends_on:
       - mariadb
 
-    env_file: .env
     environment:
       MANGOS_DBHOST: mariadb
-      MANGOS_DBUSER: mangos
-      MANGOS_DBPASS: mangos00
+      MANGOS_DBUSER: "${MANGOS_DBUSER}"
+      MANGOS_DBPASS: "${MANGOS_DBPASS}"
+      TZ: "${WOW_TIMEZONE}"
 
     command: realmd
     networks:
@@ -71,7 +71,7 @@ services:
     environment:
       PMA_HOST: mariadb
       PMA_USER: root
-      PMA_PASSWORD: root00
+      PMA_PASSWORD: "${MYSQL_SUPERPASS}"
 
     networks:
       - default

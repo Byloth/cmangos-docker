@@ -11,6 +11,7 @@ readonly IMAGE="ghcr.io/byloth/cmangos/${WOW_VERSION}/builder"
 readonly VERSION="latest"
 
 readonly DATA_VOLUME="cmangos_mangosd_data"
+readonly NETWORK="cmangos_default"
 
 if [[ -t 0 ]] && [[ -t 1 ]]
 then
@@ -21,12 +22,13 @@ fi
 
 docker run ${TTY} \
            --name "${NAME}" \
+           --network "${NETWORK}" \
            --rm \
            -e MYSQL_SUPERUSER="root" \
-           -e MYSQL_SUPERPASS="root00" \
-           -e MANGOS_DBHOST="172.17.0.1" \
-           -e MANGOS_DBUSER="mangos" \
-           -e MANGOS_DBPASS="mangos00" \
+           -e MYSQL_SUPERPASS="${MYSQL_SUPERPASS}" \
+           -e MANGOS_DBHOST="mariadb" \
+           -e MANGOS_DBUSER="${MANGOS_DBUSER}" \
+           -e MANGOS_DBPASS="${MANGOS_DBPASS}" \
            -v "${DATA_VOLUME}":/home/mangos/data \
            -v "${WOW_CLIENT_DIR}":/home/mangos/wow-client \
     \

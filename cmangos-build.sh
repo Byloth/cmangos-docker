@@ -59,7 +59,7 @@ Options:
         Specify the timezone that will be injected
          as a default into the built Docker image.
         When not specified, the timezone
-         is \"Europe/Rome\" by default.
+         is \"${WOW_TIMEZONE}\" by default.
 
     -t | --threads <number>
         Specify the number of threads that
@@ -188,7 +188,7 @@ then
 fi
 if [[ -z "${TIMEZONE}" ]]
 then
-    readonly TIMEZONE="Europe/Rome"
+    readonly TIMEZONE="${WOW_TIMEZONE}"
 fi
 if [[ -z "${THREADS}" ]]
 then
