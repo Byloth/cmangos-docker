@@ -15,7 +15,7 @@ RUN apt-get update \
         build-essential \
         ca-certificates \
         cmake \
-        g++-12 \
+        g++-14 \
         git-core \
         libboost-filesystem-dev \
         libboost-program-options-dev \
@@ -28,9 +28,9 @@ RUN apt-get update \
         mariadb-client \
  \
  && update-alternatives --install /usr/bin/gcc gcc \
-                                  /usr/bin/gcc-12 12 \
+                                  /usr/bin/gcc-14 14 \
                         --slave /usr/bin/g++ g++ \
-        /usr/bin/g++-12 \
+        /usr/bin/g++-14 \
  \
  && rm -rf /var/lib/apt/lists/* \
            /tmp/*
