@@ -89,7 +89,7 @@ RUN mkdir -p "${MANGOS_DIR}" \
 #   - POSTGRESQL              Use PostgreSQL instead of mysql
 #   - BUILD_EXTRACTORS        Build map/dbc/vmap/mmap extractor
 #   - BUILD_SCRIPTDEV         Build scriptdev. (Disable it to speedup build in dev mode by not including scripts)
-#   - BUILD_PLAYERBOT         Build Playerbot mod
+#   - BUILD_PLAYERBOTS        Build Playerbot mod
 #   - BUILD_AHBOT             Build Auction House Bot mod
 #   - BUILD_METRICS           Build Metrics, generate data for Grafana
 #   - BUILD_RECASTDEMOMOD     Build map/vmap/mmap viewer

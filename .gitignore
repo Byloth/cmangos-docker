@@ -13,3 +13,7 @@ Desktop.ini
 # Environmental files
 #
 .env
+
+# Log files
+#
+*.log
