@@ -66,3 +66,29 @@
       >Help</a>
   </sup>
 </div>
+
+<h2 align="center">
+  Interested but don't know where to start?
+</h2>
+
+<div align="center">
+  <p>
+    What you think starting from the <a href="https://github.com/Byloth/cmangos-docker/wiki">Introduction</a> page of the wiki?
+  </p>
+</div>
+
+<h3 align="center">
+  Is it any good?
+</h3>
+
+<div align="center">
+  <p>
+    Yes. <sup>[<a href="https://news.ycombinator.com/item?id=3067434">1</a>]</sup>
+  </p>
+</div>
+
+<div align="center">
+  <a href="https://star-history.com/#Byloth/cmangos-docker&Date">
+    <img src="https://api.star-history.com/svg?repos=Byloth/cmangos-docker&type=Date" />
+  </a>
+</div>
