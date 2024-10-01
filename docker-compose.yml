@@ -8,9 +8,6 @@ services:
     networks:
       - default
 
-    ports:
-      - "3306:3306"
-
     volumes:
       - mariadb_data:/var/lib/mysql
       - ./database:/etc/mysql/conf.d:ro
