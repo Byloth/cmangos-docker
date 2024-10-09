@@ -30,7 +30,7 @@ services:
       - default
 
     ports:
-      - "8085:8085"
+      - "${MANGOSD_PORT:-8085}:8085"
 
     volumes:
       - cmangos_mangosd_data:/var/lib/mangos:ro
@@ -52,7 +52,7 @@ services:
       - default
 
     ports:
-      - "3724:3724"
+      - "${REALMD_PORT:-3724}:3724"
 
     volumes:
       - cmangos_mangosd_data:/var/lib/mangos:ro
@@ -74,7 +74,7 @@ services:
       - default
 
     ports:
-      - "8080:80"
+      - "${PHPMYADMIN_PORT:-8080}:80"
 
 networks:
   default:
