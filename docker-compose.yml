@@ -13,7 +13,8 @@ services:
       - ./database:/etc/mysql/conf.d:ro
 
   mangosd:
-    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:latest"
+    # image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:latest"
+    image: byloth/cmangos-tbc:develop
     depends_on:
       - mariadb
 
@@ -37,7 +38,8 @@ services:
       - ./runner/config:/opt/mangos/conf:ro
 
   realmd:
-    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:latest"
+    # image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:latest"
+    image: byloth/cmangos-tbc:develop
     depends_on:
       - mariadb
 
