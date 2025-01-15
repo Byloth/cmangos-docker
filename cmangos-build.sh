@@ -146,10 +146,10 @@ do
             shift
             ;;
         -C | --no-cache)
-            readonly NO_CACHE="--no-cache"
+            NO_CACHE="--no-cache"
             ;;
         -p | --pull)
-            readonly PULL="--pull"
+            PULL="--pull"
             ;;
         -h | -? | --help)
             echo -e "${HELP_MSG}"
@@ -203,6 +203,9 @@ if [[ "${TARGET}" == "builder" ]] || [[ "${TARGET}" == "all" ]]
 then
     docker-build --tag "${IMAGE}/builder:${VERSION}" \
                  --target "builder"
+
+    unset NO_CACHE
+    unset PULL
 fi
 if [[ "${TARGET}" == "runner" ]] || [[ "${TARGET}" == "all" ]]
 then

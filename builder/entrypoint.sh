@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
 
+readonly SCRIPT_VERSION="1.0.0"
+
 set -e
 
 # Utils:
@@ -68,6 +70,31 @@ function install_updates()
 #
 function extract_resources_from_client()
 {
+    cd "${VOLUME_DIR}"
+
+    if [[ -f ".resext" ]] || [[ $(ls | grep -c -E "Cameras|dbc|maps|mmaps|vmaps") -gt 0 ]]
+    then
+        echo ""
+        echo -e " $(warning "WARNING!" --underline)"
+        echo -e "  $(warning "└") It seems that you've already extracted the resources from the client before."
+        echo -e "    If you continue, existing resources will be overwritten by the new ones."
+        echo ""
+        read -p "Are you sure to continue? [Y/n]: " ANSWER
+
+        if [[ "${ANSWER}" != "y" ]] && [[ "${ANSWER}" != "Y" ]]
+        then
+            echo -e " └ Ok, no problem! Resources have been left untouched."
+
+            return
+        fi
+
+        rm -rf Cameras/ \
+               dbc/ \
+               maps/ \
+               mmaps/ \
+               vmaps/
+    fi
+
     cd "${HOME_DIR}/run/bin/tools"
 
     cp * "${HOME_DIR}/wow-client/"
@@ -93,6 +120,8 @@ function extract_resources_from_client()
        offmesh.txt \
        vmap_assembler \
        vmap_extractor
+
+    echo "${SCRIPT_VERSION}" > "${VOLUME_DIR}/.resext"
 }
 function init_db()
 {
@@ -107,18 +136,20 @@ function init_db()
                  echo -e "     this procedure will prune $(info "ALL") of your data and"
                  echo -e "     they will be lost $(info "FOREVER") (it's a very long time)!"
     echo ""
-    read -p "Are you sure to continue? [N]: " ANSWER
+    read -p "Are you sure to continue? [Y/n]: " ANSWER
 
-    if [[ "${ANSWER}" == "y" ]] || [[ "${ANSWER}" == "Y" ]]
+    if [[ "${ANSWER}" != "y" ]] && [[ "${ANSWER}" != "Y" ]]
     then
-        echo -e " └ Please, wait... Initializing databases..."
-        echo ""
-        echo -e " --------------------------------------"
-
-        ./InstallFullDB.sh -InstallAll "${MYSQL_SUPERUSER}" "${MYSQL_SUPERPASS}" DeleteAll
-    else
         echo -e " └ Ok, no problem! Databases have been left untouched."
+
+        return
     fi
+
+    echo -e " └ Please, wait... Initializing databases..."
+    echo ""
+    echo -e " --------------------------------------"
+
+    ./InstallFullDB.sh -InstallAll "${MYSQL_SUPERUSER}" "${MYSQL_SUPERPASS}" DeleteAll
 }
 function backup_db()
 {
@@ -233,7 +264,9 @@ Options:
     done
 
     cd "${BACKUP_DIR}"
-    tar -czvf "${BACKUP_FILE}" $(ls *.sql | xargs -n 1) > /dev/null
+
+    echo "${SCRIPT_VERSION}" > .version
+    tar -czvf "${BACKUP_FILE}" .version $(ls *.sql | xargs -n 1) > /dev/null
 
     cat "${BACKUP_FILE}"
 }
@@ -320,18 +353,21 @@ Options:
                 echo -e "  $(warning "└") This procedure will prune all custom data you"
                 echo -e "     may have loaded into your \"$(info "${MANGOS_WORLD_DBNAME}")\" database."
                 echo ""
-                read -p "Are you sure to continue? [N]: " ANSWER
+                read -p "Are you sure to continue? [Y/n]: " ANSWER
 
-                if [[ "${ANSWER}" == "y" ]] || [[ "${ANSWER}" == "Y" ]]
+                if [[ "${ANSWER}" != "y" ]] && [[ "${ANSWER}" != "Y" ]]
                 then
-                    echo -e " └ Please, wait... Updating database..."
-                    echo ""
-                    echo -e " --------------------------------------"
-
-                    install_updates --world
-                else
                     echo -e " └ Ok, no problem! Database have been left untouched."
+
+                    return
                 fi
+
+                echo -e " └ Please, wait... Updating database..."
+                echo ""
+                echo -e " --------------------------------------"
+
+                install_updates --world
+
                 ;;
             -h | -? | --help)
                 echo -e "${HELP_MSG}"
