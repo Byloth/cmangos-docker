@@ -99,8 +99,6 @@
     -60deg, #f47731, #f5594e, #ea3f68, #d53080, #b63294, #8e3aa1, #5d41a5, #0c449f
   );
 
-  background: linear-gradient(90deg, );
-
   --vp-home-hero-image-background-image: linear-gradient(-45deg, #f47731 33.333%, #c5318a, #0c449f 66.666%);
 
   --vp-home-hero-image-filter: blur(44px);
@@ -112,8 +110,6 @@
   );
 
   --vp-home-hero-image-background-image: linear-gradient(-45deg, #fc952f 33.333%, #e970c6, #1093d7 66.666%);
-
-  background: linear-gradient(90deg, );
 }
 
 @media (min-width: 640px)
