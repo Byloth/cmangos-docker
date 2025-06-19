@@ -10,6 +10,10 @@ Desktop.ini
 
 /*.code-workspace
 
+# Downloadable & installable modules & components
+#
+/node_modules/
+
 # Environmental files
 #
 .env
