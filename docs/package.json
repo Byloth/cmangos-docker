@@ -1,0 +1,13 @@
+{
+  "name": "@byloth/cmangos-docker-docs",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.3",
+    "vue": "^3.5.17"
+  },
+  "private": true
+}
