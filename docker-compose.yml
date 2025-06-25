@@ -1,9 +1,9 @@
 name: cmangos
 services:
   mariadb:
-    image: mariadb:11.5
+    image: mariadb:11.8
     environment:
-      MYSQL_ROOT_PASSWORD: "${MYSQL_SUPERPASS}"
+      MARIADB_ROOT_PASSWORD: "${MYSQL_SUPERPASS}"
 
     networks:
       - default
