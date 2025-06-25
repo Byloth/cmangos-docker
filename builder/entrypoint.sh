@@ -41,14 +41,14 @@ function error()
 
 function mysql_execute()
 {
-    mysql "-h${MANGOS_DBHOST}" "-P${MANGOS_DBPORT}" "-u${MYSQL_SUPERUSER}" "-p${MYSQL_SUPERPASS}" ${@}
+    mariadb "-h${MANGOS_DBHOST}" "-P${MANGOS_DBPORT}" "-u${MYSQL_SUPERUSER}" "-p${MYSQL_SUPERPASS}" ${@}
 }
 function mysql_dump()
 {
     local DATABASE_NAME="${1}"
     local OUTPUT_FILE="${2}"
 
-    mysqldump "-h${MANGOS_DBHOST}" "-P${MANGOS_DBPORT}" "-u${MYSQL_SUPERUSER}" "-p${MYSQL_SUPERPASS}" \
+    mariadb-dump "-h${MANGOS_DBHOST}" "-P${MANGOS_DBPORT}" "-u${MYSQL_SUPERUSER}" "-p${MYSQL_SUPERPASS}" \
         "${DATABASE_NAME}" --opt --result-file="${OUTPUT_FILE}"
 }
 
