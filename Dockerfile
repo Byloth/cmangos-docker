@@ -4,7 +4,10 @@ ENV DEBIAN_FRONTEND="noninteractive"
 
 ARG TIMEZONE="Etc/UTC"
 ENV TZ="${TIMEZONE}"
-RUN apt-get update \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    \
+    apt-get update \
  && apt-get install -y --no-install-recommends \
         tzdata \
  && ln -snf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime \
@@ -30,10 +33,9 @@ RUN apt-get update \
  && update-alternatives --install /usr/bin/gcc gcc \
                                   /usr/bin/gcc-14 14 \
                         --slave /usr/bin/g++ g++ \
-        /usr/bin/g++-14 \
+                                /usr/bin/g++-14 \
  \
- && rm -rf /var/lib/apt/lists/* \
-           /tmp/*
+ && rm -rf /tmp/*
 
 ARG EXPANSION
 ARG MANGOS_SHA1="latest"
@@ -170,7 +172,10 @@ ENV DEBIAN_FRONTEND="noninteractive"
 
 ARG TIMEZONE="Etc/UTC"
 ENV TZ="${TIMEZONE}"
-RUN apt-get update \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    \
+    apt-get update \
  && apt-get install -y --no-install-recommends \
         tzdata \
  && ln -snf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime \
@@ -183,8 +188,7 @@ RUN apt-get update \
         libssl3 \
         wait-for-it \
  \
- && rm -rf /var/lib/apt/lists/* \
-           /tmp/*
+ && rm -rf /tmp/*
 
 ENV HOME_DIR="/home/mangos"
 ENV MANGOS_DIR="/opt/mangos"

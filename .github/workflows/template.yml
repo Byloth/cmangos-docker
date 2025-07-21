@@ -70,7 +70,7 @@ jobs:
 
       - name: Build the Docker images
         run: |
-          docker build --build-arg EXPANSION="${{ inputs.expansion }}" \
+          docker buildx build --build-arg EXPANSION="${{ inputs.expansion }}" \
                        --build-arg MANGOS_SHA1="${{ env.MANGOS_SHA1 }}" \
                        --build-arg DATABASE_SHA1="${{ env.DATABASE_SHA1 }}" \
                        --build-arg THREADS="2" \
@@ -167,7 +167,7 @@ jobs:
 
       - name: Build the Docker images
         run: |
-          docker build --build-arg EXPANSION="${{ inputs.expansion }}" \
+          docker buildx build --build-arg EXPANSION="${{ inputs.expansion }}" \
                        --build-arg MANGOS_SHA1="${{ env.MANGOS_SHA1 }}" \
                        --build-arg DATABASE_SHA1="${{ env.DATABASE_SHA1 }}" \
                        --build-arg THREADS="2" \
