@@ -72,6 +72,10 @@ jobs:
                               \
                               --tag "${{ env.BUILDER_IMAGE_REF }}" \
                               --tag "${{ env.BUILDER_IMAGE_TAG }}" \
+                              ${{ github.ref == 'refs/heads/master' && format('--tag "{0}"', env.BUILDER_IMAGE_DAY) || '' }} \
+                              ${{ github.ref == 'refs/heads/master' && format('--tag "{0}"', env.BUILDER_IMAGE_LATEST) || '' }} \
+                              \
+                              --load \
                               \
                               --target "builder" \
             \
@@ -85,9 +89,6 @@ jobs:
       - name: Push latest Docker image
         if: ${{ github.ref == 'refs/heads/master' }}
         run: |
-          docker tag "${{ env.BUILDER_IMAGE_REF }}" "${{ env.BUILDER_IMAGE_DAY }}" && \
-          docker tag "${{ env.BUILDER_IMAGE_REF }}" "${{ env.BUILDER_IMAGE_LATEST }}" && \
-          \
           docker push "${{ env.BUILDER_IMAGE_DAY }}" && \
           docker push "${{ env.BUILDER_IMAGE_LATEST }}"
 
@@ -127,28 +128,6 @@ jobs:
           echo RUNNER_IMAGE_DAY="${RUNNER_IMAGE}:$(date -u +"%Y-%m-%d")" >> "${GITHUB_ENV}" && \
           echo RUNNER_IMAGE_LATEST="${RUNNER_IMAGE}:latest" >> "${GITHUB_ENV}"
 
-      - name: Pull the CMaNGOS builder image
-        run: docker pull "${{ env.BUILDER_IMAGE }}"
-
-      - name: Pull the Docker cache images
-        run: |
-          if docker pull "${{ env.RUNNER_IMAGE_REF }}"
-          then
-            docker tag "${{ env.RUNNER_IMAGE_REF }}" "${{ env.RUNNER_IMAGE_CACHE }}"
-
-          elif docker pull "${{ env.RUNNER_IMAGE_TAG }}"
-          then
-            docker tag "${{ env.RUNNER_IMAGE_TAG }}" "${{ env.RUNNER_IMAGE_CACHE }}"
-
-          elif docker pull "${{ env.RUNNER_IMAGE_DAY }}"
-          then
-            docker tag "${{ env.RUNNER_IMAGE_DAY }}" "${{ env.RUNNER_IMAGE_CACHE }}"
-
-          elif docker pull "${{ env.RUNNER_IMAGE_LATEST }}"
-          then
-            docker tag "${{ env.RUNNER_IMAGE_LATEST }}" "${{ env.RUNNER_IMAGE_CACHE }}"
-          fi
-
       - name: Definition of build arguments
         run: |
           echo MANGOS_SHA1="$(curl -sSL https://api.github.com/repos/cmangos/mangos-${{ inputs.expansion }}/commits/master \
@@ -183,6 +162,10 @@ jobs:
                               \
                               --tag "${{ env.RUNNER_IMAGE_REF }}" \
                               --tag "${{ env.RUNNER_IMAGE_TAG }}" \
+                              ${{ github.ref == 'refs/heads/master' && format('--tag "{0}"', env.RUNNER_IMAGE_DAY) || '' }} \
+                              ${{ github.ref == 'refs/heads/master' && format('--tag "{0}"', env.RUNNER_IMAGE_LATEST) || '' }} \
+                              \
+                              --load \
                               \
                               --target "runner" \
             \
@@ -196,8 +179,5 @@ jobs:
       - name: Push latest Docker image
         if: ${{ github.ref == 'refs/heads/master' }}
         run: |
-          docker tag "${{ env.RUNNER_IMAGE_REF }}" "${{ env.RUNNER_IMAGE_DAY }}" && \
-          docker tag "${{ env.RUNNER_IMAGE_REF }}" "${{ env.RUNNER_IMAGE_LATEST }}" && \
-          \
           docker push "${{ env.RUNNER_IMAGE_DAY }}" & \
           docker push "${{ env.RUNNER_IMAGE_LATEST }}"
