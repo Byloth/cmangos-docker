@@ -43,8 +43,10 @@ jobs:
       - name: Definition of build arguments
         run: |
           echo MANGOS_SHA1="$(curl -sSL https://api.github.com/repos/cmangos/mangos-${{ inputs.expansion }}/commits/master \
+                                   -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
                                    -H "Accept: application/vnd.github.VERSION.sha")" >> "${GITHUB_ENV}" && \
           echo DATABASE_SHA1="$(curl -sSL https://api.github.com/repos/cmangos/${{ inputs.expansion }}-db/commits/master \
+                                     -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
                                      -H "Accept: application/vnd.github.VERSION.sha")" >> "${GITHUB_ENV}" && \
           \
           echo TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> "${GITHUB_ENV}" && \
@@ -122,8 +124,10 @@ jobs:
       - name: Definition of build arguments
         run: |
           echo MANGOS_SHA1="$(curl -sSL https://api.github.com/repos/cmangos/mangos-${{ inputs.expansion }}/commits/master \
+                                   -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
                                    -H "Accept: application/vnd.github.VERSION.sha")" >> "${GITHUB_ENV}" && \
           echo DATABASE_SHA1="$(curl -sSL https://api.github.com/repos/cmangos/${{ inputs.expansion }}-db/commits/master \
+                                     -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
                                      -H "Accept: application/vnd.github.VERSION.sha")" >> "${GITHUB_ENV}" && \
           \
           echo TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> "${GITHUB_ENV}" && \
