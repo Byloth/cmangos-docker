@@ -60,20 +60,8 @@ jobs:
                               --build-arg CREATE_DATE="${{ env.TIMESTAMP }}" \
                               --build-arg VERSION="${{ env.VERSION_CODE }}" \
                               \
-                              --cache-from type=registry,ref="${{ env.BUILDER_IMAGE_REF }}" \
-                              --cache-from type=registry,ref="${{ env.BUILDER_IMAGE_TAG }}" \
-                              --cache-from type=registry,ref="${{ env.BUILDER_IMAGE_DAY }}" \
-                              --cache-from type=registry,ref="${{ env.BUILDER_IMAGE_LATEST }}" \
-                              \
-                              --cache-to type=registry,ref="${{ env.BUILDER_IMAGE_REF }}",mode=max \
-                              --cache-to type=registry,ref="${{ env.BUILDER_IMAGE_TAG }}",mode=max \
-                              ${{ github.ref == 'refs/heads/master' && format('--cache-to type=registry,ref="{0}",mode=max', env.BUILDER_IMAGE_DAY) || '' }} \
-                              ${{ github.ref == 'refs/heads/master' && format('--cache-to type=registry,ref="{0}",mode=max', env.BUILDER_IMAGE_LATEST) || '' }} \
-                              \
                               --tag "${{ env.BUILDER_IMAGE_REF }}" \
                               --tag "${{ env.BUILDER_IMAGE_TAG }}" \
-                              ${{ github.ref == 'refs/heads/master' && format('--tag "{0}"', env.BUILDER_IMAGE_DAY) || '' }} \
-                              ${{ github.ref == 'refs/heads/master' && format('--tag "{0}"', env.BUILDER_IMAGE_LATEST) || '' }} \
                               \
                               --load \
                               \
@@ -89,6 +77,9 @@ jobs:
       - name: Push latest Docker image
         if: ${{ github.ref == 'refs/heads/master' }}
         run: |
+          docker tag "${{ env.BUILDER_IMAGE_REF }}" "${{ env.BUILDER_IMAGE_DAY }}" && \
+          docker tag "${{ env.BUILDER_IMAGE_REF }}" "${{ env.BUILDER_IMAGE_LATEST }}" && \
+          \
           docker push "${{ env.BUILDER_IMAGE_DAY }}" && \
           docker push "${{ env.BUILDER_IMAGE_LATEST }}"
 
@@ -148,22 +139,8 @@ jobs:
                               --build-arg CREATE_DATE="${{ env.TIMESTAMP }}" \
                               --build-arg VERSION="${{ env.VERSION_CODE }}" \
                               \
-                              --cache-from type=registry,ref="${{ env.BUILDER_IMAGE }}" \
-                              \
-                              --cache-from type=registry,ref="${{ env.RUNNER_IMAGE_REF }}" \
-                              --cache-from type=registry,ref="${{ env.RUNNER_IMAGE_TAG }}" \
-                              --cache-from type=registry,ref="${{ env.RUNNER_IMAGE_DAY }}" \
-                              --cache-from type=registry,ref="${{ env.RUNNER_IMAGE_LATEST }}" \
-                              \
-                              --cache-to type=registry,ref="${{ env.RUNNER_IMAGE_REF }}",mode=max \
-                              --cache-to type=registry,ref="${{ env.RUNNER_IMAGE_TAG }}",mode=max \
-                              ${{ github.ref == 'refs/heads/master' && format('--cache-to type=registry,ref="{0}",mode=max', env.RUNNER_IMAGE_DAY) || '' }} \
-                              ${{ github.ref == 'refs/heads/master' && format('--cache-to type=registry,ref="{0}",mode=max', env.RUNNER_IMAGE_LATEST) || '' }} \
-                              \
                               --tag "${{ env.RUNNER_IMAGE_REF }}" \
                               --tag "${{ env.RUNNER_IMAGE_TAG }}" \
-                              ${{ github.ref == 'refs/heads/master' && format('--tag "{0}"', env.RUNNER_IMAGE_DAY) || '' }} \
-                              ${{ github.ref == 'refs/heads/master' && format('--tag "{0}"', env.RUNNER_IMAGE_LATEST) || '' }} \
                               \
                               --load \
                               \
@@ -179,5 +156,8 @@ jobs:
       - name: Push latest Docker image
         if: ${{ github.ref == 'refs/heads/master' }}
         run: |
+          docker tag "${{ env.RUNNER_IMAGE_REF }}" "${{ env.RUNNER_IMAGE_DAY }}" && \
+          docker tag "${{ env.RUNNER_IMAGE_REF }}" "${{ env.RUNNER_IMAGE_LATEST }}" && \
+          \
           docker push "${{ env.RUNNER_IMAGE_DAY }}" & \
           docker push "${{ env.RUNNER_IMAGE_LATEST }}"
