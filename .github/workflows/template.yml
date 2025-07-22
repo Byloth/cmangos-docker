@@ -35,28 +35,7 @@ jobs:
           echo BUILDER_IMAGE_TAG="${BUILDER_IMAGE}:${{ env.GITHUB_REF_SLUG }}" >> "${GITHUB_ENV}" && \
           \
           echo BUILDER_IMAGE_DAY="${BUILDER_IMAGE}:$(date -u +"%Y-%m-%d")" >> "${GITHUB_ENV}" && \
-          \
-          echo BUILDER_IMAGE_LATEST="${BUILDER_IMAGE}:latest" >> "${GITHUB_ENV}" && \
-          echo BUILDER_IMAGE_CACHE="${BUILDER_IMAGE}:cache" >> "${GITHUB_ENV}"
-
-      - name: Pull the Docker cache images
-        run: |
-          if docker pull "${{ env.BUILDER_IMAGE_REF }}"
-          then
-            docker tag "${{ env.BUILDER_IMAGE_REF }}" "${{ env.BUILDER_IMAGE_CACHE }}"
-
-          elif docker pull "${{ env.BUILDER_IMAGE_TAG }}"
-          then
-            docker tag "${{ env.BUILDER_IMAGE_TAG }}" "${{ env.BUILDER_IMAGE_CACHE }}"
-
-          elif docker pull "${{ env.BUILDER_IMAGE_DAY }}"
-          then
-            docker tag "${{ env.BUILDER_IMAGE_DAY }}" "${{ env.BUILDER_IMAGE_CACHE }}"
-
-          elif docker pull "${{ env.BUILDER_IMAGE_LATEST }}"
-          then
-            docker tag "${{ env.BUILDER_IMAGE_LATEST }}" "${{ env.BUILDER_IMAGE_CACHE }}"
-          fi
+          echo BUILDER_IMAGE_LATEST="${BUILDER_IMAGE}:latest" >> "${GITHUB_ENV}"
 
       - name: Definition of build arguments
         run: |
@@ -71,16 +50,27 @@ jobs:
       - name: Build the Docker images
         run: |
           docker buildx build --build-arg EXPANSION="${{ inputs.expansion }}" \
-                       --build-arg MANGOS_SHA1="${{ env.MANGOS_SHA1 }}" \
-                       --build-arg DATABASE_SHA1="${{ env.DATABASE_SHA1 }}" \
-                       --build-arg THREADS="2" \
-                       --build-arg COMMIT_SHA="${{ github.sha }}" \
-                       --build-arg CREATE_DATE="${{ env.TIMESTAMP }}" \
-                       --build-arg VERSION="${{ env.VERSION_CODE }}" \
-                       --cache-from "${{ env.BUILDER_IMAGE_CACHE }}" \
-                       --tag "${{ env.BUILDER_IMAGE_REF }}" \
-                       --tag "${{ env.BUILDER_IMAGE_TAG }}" \
-                       --target "builder" \
+                              --build-arg MANGOS_SHA1="${{ env.MANGOS_SHA1 }}" \
+                              --build-arg DATABASE_SHA1="${{ env.DATABASE_SHA1 }}" \
+                              --build-arg THREADS="2" \
+                              --build-arg COMMIT_SHA="${{ github.sha }}" \
+                              --build-arg CREATE_DATE="${{ env.TIMESTAMP }}" \
+                              --build-arg VERSION="${{ env.VERSION_CODE }}" \
+                              \
+                              --cache-from type=registry,ref="${{ env.BUILDER_IMAGE_REF }}" \
+                              --cache-from type=registry,ref="${{ env.BUILDER_IMAGE_TAG }}" \
+                              --cache-from type=registry,ref="${{ env.BUILDER_IMAGE_DAY }}" \
+                              --cache-from type=registry,ref="${{ env.BUILDER_IMAGE_LATEST }}" \
+                              \
+                              --cache-to type=registry,ref="${{ env.BUILDER_IMAGE_REF }}",mode=max \
+                              --cache-to type=registry,ref="${{ env.BUILDER_IMAGE_TAG }}",mode=max \
+                              ${{ github.ref == 'refs/heads/master' && format('--cache-to type=registry,ref="{0}",mode=max', env.BUILDER_IMAGE_DAY) || '' }} \
+                              ${{ github.ref == 'refs/heads/master' && format('--cache-to type=registry,ref="{0}",mode=max', env.BUILDER_IMAGE_LATEST) || '' }} \
+                              \
+                              --tag "${{ env.BUILDER_IMAGE_REF }}" \
+                              --tag "${{ env.BUILDER_IMAGE_TAG }}" \
+                              \
+                              --target "builder" \
             \
             . # There's a `dot` on this line!
 
@@ -129,9 +119,7 @@ jobs:
           echo RUNNER_IMAGE_TAG="${RUNNER_IMAGE}:${{ env.GITHUB_REF_SLUG }}" >> "${GITHUB_ENV}" && \
           \
           echo RUNNER_IMAGE_DAY="${RUNNER_IMAGE}:$(date -u +"%Y-%m-%d")" >> "${GITHUB_ENV}" && \
-          \
-          echo RUNNER_IMAGE_LATEST="${RUNNER_IMAGE}:latest" >> "${GITHUB_ENV}" && \
-          echo RUNNER_IMAGE_CACHE="${RUNNER_IMAGE}:cache" >> "${GITHUB_ENV}"
+          echo RUNNER_IMAGE_LATEST="${RUNNER_IMAGE}:latest" >> "${GITHUB_ENV}"
 
       - name: Pull the CMaNGOS builder image
         run: docker pull "${{ env.BUILDER_IMAGE }}"
@@ -168,17 +156,29 @@ jobs:
       - name: Build the Docker images
         run: |
           docker buildx build --build-arg EXPANSION="${{ inputs.expansion }}" \
-                       --build-arg MANGOS_SHA1="${{ env.MANGOS_SHA1 }}" \
-                       --build-arg DATABASE_SHA1="${{ env.DATABASE_SHA1 }}" \
-                       --build-arg THREADS="2" \
-                       --build-arg COMMIT_SHA="${{ github.sha }}" \
-                       --build-arg CREATE_DATE="${{ env.TIMESTAMP }}" \
-                       --build-arg VERSION="${{ env.VERSION_CODE }}" \
-                       --cache-from "${{ env.BUILDER_IMAGE }}" \
-                       --cache-from "${{ env.RUNNER_IMAGE_CACHE }}" \
-                       --tag "${{ env.RUNNER_IMAGE_REF }}" \
-                       --tag "${{ env.RUNNER_IMAGE_TAG }}" \
-                       --target "runner" \
+                              --build-arg MANGOS_SHA1="${{ env.MANGOS_SHA1 }}" \
+                              --build-arg DATABASE_SHA1="${{ env.DATABASE_SHA1 }}" \
+                              --build-arg THREADS="2" \
+                              --build-arg COMMIT_SHA="${{ github.sha }}" \
+                              --build-arg CREATE_DATE="${{ env.TIMESTAMP }}" \
+                              --build-arg VERSION="${{ env.VERSION_CODE }}" \
+                              \
+                              --cache-from type=registry,ref="${{ env.BUILDER_IMAGE }}" \
+                              \
+                              --cache-from type=registry,ref="${{ env.RUNNER_IMAGE_REF }}" \
+                              --cache-from type=registry,ref="${{ env.RUNNER_IMAGE_TAG }}" \
+                              --cache-from type=registry,ref="${{ env.RUNNER_IMAGE_DAY }}" \
+                              --cache-from type=registry,ref="${{ env.RUNNER_IMAGE_LATEST }}" \
+                              \
+                              --cache-to type=registry,ref="${{ env.RUNNER_IMAGE_REF }}",mode=max \
+                              --cache-to type=registry,ref="${{ env.RUNNER_IMAGE_TAG }}",mode=max \
+                              ${{ github.ref == 'refs/heads/master' && format('--cache-to type=registry,ref="{0}",mode=max', env.RUNNER_IMAGE_DAY) || '' }} \
+                              ${{ github.ref == 'refs/heads/master' && format('--cache-to type=registry,ref="{0}",mode=max', env.RUNNER_IMAGE_LATEST) || '' }} \
+                              \
+                              --tag "${{ env.RUNNER_IMAGE_REF }}" \
+                              --tag "${{ env.RUNNER_IMAGE_TAG }}" \
+                              \
+                              --target "runner" \
             \
             . # There's a `dot` on this line!
 
