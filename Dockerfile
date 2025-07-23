@@ -105,9 +105,14 @@ RUN mkdir -p "${HOME_DIR}/build" \
  && cd "${HOME_DIR}/build" \
  && cmake ../mangos/ \
         -D CMAKE_INSTALL_PREFIX=../run \
-        -D PCH=1 \
         -D DEBUG=0 \
+        -D PCH=1 \
+        -D BUILD_AHBOT=ON \
         -D BUILD_EXTRACTORS=ON \
+        -D BUILD_METRICS=ON \
+        -D BUILD_PLAYERBOTS=ON \
+        -D BUILD_SCRIPTDEV=ON \
+ \
  && make -j "${THREADS}" \
  && make install \
  \
