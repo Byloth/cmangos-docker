@@ -8,7 +8,7 @@ source "${BASE_DIR}/.env"
 
 function docker-build()
 {
-    docker build ${@} \
+    docker buildx build ${@} \
              \
              ${NO_CACHE} \
              ${PULL} \

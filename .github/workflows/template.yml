@@ -19,6 +19,9 @@ jobs:
           registry: ghcr.io
           repository: ${{ github.repository_owner }}/CMaNGOS
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Login to the GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -35,68 +38,44 @@ jobs:
           echo BUILDER_IMAGE_TAG="${BUILDER_IMAGE}:${{ env.GITHUB_REF_SLUG }}" >> "${GITHUB_ENV}" && \
           \
           echo BUILDER_IMAGE_DAY="${BUILDER_IMAGE}:$(date -u +"%Y-%m-%d")" >> "${GITHUB_ENV}" && \
-          \
-          echo BUILDER_IMAGE_LATEST="${BUILDER_IMAGE}:latest" >> "${GITHUB_ENV}" && \
-          echo BUILDER_IMAGE_CACHE="${BUILDER_IMAGE}:cache" >> "${GITHUB_ENV}"
-
-      - name: Pull the Docker cache images
-        run: |
-          if docker pull "${{ env.BUILDER_IMAGE_REF }}"
-          then
-            docker tag "${{ env.BUILDER_IMAGE_REF }}" "${{ env.BUILDER_IMAGE_CACHE }}"
-
-          elif docker pull "${{ env.BUILDER_IMAGE_TAG }}"
-          then
-            docker tag "${{ env.BUILDER_IMAGE_TAG }}" "${{ env.BUILDER_IMAGE_CACHE }}"
-
-          elif docker pull "${{ env.BUILDER_IMAGE_DAY }}"
-          then
-            docker tag "${{ env.BUILDER_IMAGE_DAY }}" "${{ env.BUILDER_IMAGE_CACHE }}"
-
-          elif docker pull "${{ env.BUILDER_IMAGE_LATEST }}"
-          then
-            docker tag "${{ env.BUILDER_IMAGE_LATEST }}" "${{ env.BUILDER_IMAGE_CACHE }}"
-          fi
+          echo BUILDER_IMAGE_LATEST="${BUILDER_IMAGE}:latest" >> "${GITHUB_ENV}"
 
       - name: Definition of build arguments
         run: |
           echo MANGOS_SHA1="$(curl -sSL https://api.github.com/repos/cmangos/mangos-${{ inputs.expansion }}/commits/master \
+                                   -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
                                    -H "Accept: application/vnd.github.VERSION.sha")" >> "${GITHUB_ENV}" && \
+          \
           echo DATABASE_SHA1="$(curl -sSL https://api.github.com/repos/cmangos/${{ inputs.expansion }}-db/commits/master \
+                                     -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
                                      -H "Accept: application/vnd.github.VERSION.sha")" >> "${GITHUB_ENV}" && \
           \
           echo TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> "${GITHUB_ENV}" && \
           echo VERSION_CODE="1.0.0-nightly+$(date -u +"%Y%m%d")" >> "${GITHUB_ENV}"
 
-      - name: Build the Docker images
-        run: |
-          docker build --build-arg EXPANSION="${{ inputs.expansion }}" \
-                       --build-arg MANGOS_SHA1="${{ env.MANGOS_SHA1 }}" \
-                       --build-arg DATABASE_SHA1="${{ env.DATABASE_SHA1 }}" \
-                       --build-arg THREADS="2" \
-                       --build-arg COMMIT_SHA="${{ github.sha }}" \
-                       --build-arg CREATE_DATE="${{ env.TIMESTAMP }}" \
-                       --build-arg VERSION="${{ env.VERSION_CODE }}" \
-                       --cache-from "${{ env.BUILDER_IMAGE_CACHE }}" \
-                       --tag "${{ env.BUILDER_IMAGE_REF }}" \
-                       --tag "${{ env.BUILDER_IMAGE_TAG }}" \
-                       --target "builder" \
-            \
-            . # There's a `dot` on this line!
+      - name: Build & push the Docker images
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: builder
+          push: true
+          build-args: |
+            EXPANSION=${{ inputs.expansion }}
+            MANGOS_SHA1=${{ env.MANGOS_SHA1 }}
+            DATABASE_SHA1=${{ env.DATABASE_SHA1 }}
+            THREADS=2
+            COMMIT_SHA=${{ github.sha }}
+            CREATE_DATE=${{ env.TIMESTAMP }}
+            VERSION=${{ env.VERSION_CODE }}
 
-      - name: Push the Docker images
-        run: |
-          docker push "${{ env.BUILDER_IMAGE_REF }}" && \
-          docker push "${{ env.BUILDER_IMAGE_TAG }}"
+          tags: |
+            ${{ env.BUILDER_IMAGE_REF }}
+            ${{ env.BUILDER_IMAGE_TAG }}
+            ${{ github.ref == 'refs/heads/master' && env.BUILDER_IMAGE_DAY || '' }}
+            ${{ github.ref == 'refs/heads/master' && env.BUILDER_IMAGE_LATEST || '' }}
 
-      - name: Push latest Docker image
-        if: ${{ github.ref == 'refs/heads/master' }}
-        run: |
-          docker tag "${{ env.BUILDER_IMAGE_REF }}" "${{ env.BUILDER_IMAGE_DAY }}" && \
-          docker tag "${{ env.BUILDER_IMAGE_REF }}" "${{ env.BUILDER_IMAGE_LATEST }}" && \
-          \
-          docker push "${{ env.BUILDER_IMAGE_DAY }}" && \
-          docker push "${{ env.BUILDER_IMAGE_LATEST }}"
+          cache-from: type=gha,scope=builder-${{ inputs.expansion }}
+          cache-to: type=gha,mode=max,scope=builder-${{ inputs.expansion }}
 
   build-runner:
     name: "Runner"
@@ -111,6 +90,9 @@ jobs:
           registry: ghcr.io
           repository: ${{ github.repository_owner }}/CMaNGOS
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Login to the GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -123,75 +105,48 @@ jobs:
           RUNNER_IMAGE: "${{ env.DOCKER_IMAGE }}/${{ inputs.expansion }}"
 
         run: |
-          echo BUILDER_IMAGE="${RUNNER_IMAGE}/builder:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
-          \
           echo RUNNER_IMAGE_REF="${RUNNER_IMAGE}:${{ env.GITHUB_SHORT_SHA }}" >> "${GITHUB_ENV}" && \
           echo RUNNER_IMAGE_TAG="${RUNNER_IMAGE}:${{ env.GITHUB_REF_SLUG }}" >> "${GITHUB_ENV}" && \
           \
           echo RUNNER_IMAGE_DAY="${RUNNER_IMAGE}:$(date -u +"%Y-%m-%d")" >> "${GITHUB_ENV}" && \
-          \
-          echo RUNNER_IMAGE_LATEST="${RUNNER_IMAGE}:latest" >> "${GITHUB_ENV}" && \
-          echo RUNNER_IMAGE_CACHE="${RUNNER_IMAGE}:cache" >> "${GITHUB_ENV}"
-
-      - name: Pull the CMaNGOS builder image
-        run: docker pull "${{ env.BUILDER_IMAGE }}"
-
-      - name: Pull the Docker cache images
-        run: |
-          if docker pull "${{ env.RUNNER_IMAGE_REF }}"
-          then
-            docker tag "${{ env.RUNNER_IMAGE_REF }}" "${{ env.RUNNER_IMAGE_CACHE }}"
-
-          elif docker pull "${{ env.RUNNER_IMAGE_TAG }}"
-          then
-            docker tag "${{ env.RUNNER_IMAGE_TAG }}" "${{ env.RUNNER_IMAGE_CACHE }}"
-
-          elif docker pull "${{ env.RUNNER_IMAGE_DAY }}"
-          then
-            docker tag "${{ env.RUNNER_IMAGE_DAY }}" "${{ env.RUNNER_IMAGE_CACHE }}"
-
-          elif docker pull "${{ env.RUNNER_IMAGE_LATEST }}"
-          then
-            docker tag "${{ env.RUNNER_IMAGE_LATEST }}" "${{ env.RUNNER_IMAGE_CACHE }}"
-          fi
+          echo RUNNER_IMAGE_LATEST="${RUNNER_IMAGE}:latest" >> "${GITHUB_ENV}"
 
       - name: Definition of build arguments
         run: |
           echo MANGOS_SHA1="$(curl -sSL https://api.github.com/repos/cmangos/mangos-${{ inputs.expansion }}/commits/master \
+                                   -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
                                    -H "Accept: application/vnd.github.VERSION.sha")" >> "${GITHUB_ENV}" && \
+          \
           echo DATABASE_SHA1="$(curl -sSL https://api.github.com/repos/cmangos/${{ inputs.expansion }}-db/commits/master \
+                                     -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
                                      -H "Accept: application/vnd.github.VERSION.sha")" >> "${GITHUB_ENV}" && \
           \
           echo TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> "${GITHUB_ENV}" && \
           echo VERSION_CODE="1.0.0-nightly+$(date -u +"%Y%m%d")" >> "${GITHUB_ENV}"
 
-      - name: Build the Docker images
-        run: |
-          docker build --build-arg EXPANSION="${{ inputs.expansion }}" \
-                       --build-arg MANGOS_SHA1="${{ env.MANGOS_SHA1 }}" \
-                       --build-arg DATABASE_SHA1="${{ env.DATABASE_SHA1 }}" \
-                       --build-arg THREADS="2" \
-                       --build-arg COMMIT_SHA="${{ github.sha }}" \
-                       --build-arg CREATE_DATE="${{ env.TIMESTAMP }}" \
-                       --build-arg VERSION="${{ env.VERSION_CODE }}" \
-                       --cache-from "${{ env.BUILDER_IMAGE }}" \
-                       --cache-from "${{ env.RUNNER_IMAGE_CACHE }}" \
-                       --tag "${{ env.RUNNER_IMAGE_REF }}" \
-                       --tag "${{ env.RUNNER_IMAGE_TAG }}" \
-                       --target "runner" \
-            \
-            . # There's a `dot` on this line!
+      - name: Build & push the Docker images
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: runner
+          push: true
+          build-args: |
+            EXPANSION=${{ inputs.expansion }}
+            MANGOS_SHA1=${{ env.MANGOS_SHA1 }}
+            DATABASE_SHA1=${{ env.DATABASE_SHA1 }}
+            THREADS=2
+            COMMIT_SHA=${{ github.sha }}
+            CREATE_DATE=${{ env.TIMESTAMP }}
+            VERSION=${{ env.VERSION_CODE }}
 
-      - name: Push the Docker images
-        run: |
-          docker push "${{ env.RUNNER_IMAGE_REF }}" & \
-          docker push "${{ env.RUNNER_IMAGE_TAG }}"
+          tags: |
+            ${{ env.RUNNER_IMAGE_REF }}
+            ${{ env.RUNNER_IMAGE_TAG }}
+            ${{ github.ref == 'refs/heads/master' && env.RUNNER_IMAGE_DAY || '' }}
+            ${{ github.ref == 'refs/heads/master' && env.RUNNER_IMAGE_LATEST || '' }}
 
-      - name: Push latest Docker image
-        if: ${{ github.ref == 'refs/heads/master' }}
-        run: |
-          docker tag "${{ env.RUNNER_IMAGE_REF }}" "${{ env.RUNNER_IMAGE_DAY }}" && \
-          docker tag "${{ env.RUNNER_IMAGE_REF }}" "${{ env.RUNNER_IMAGE_LATEST }}" && \
-          \
-          docker push "${{ env.RUNNER_IMAGE_DAY }}" & \
-          docker push "${{ env.RUNNER_IMAGE_LATEST }}"
+          cache-from: |
+            type=gha,scope=builder-${{ inputs.expansion }}
+            type=gha,scope=runner-${{ inputs.expansion }}
+
+          cache-to: type=gha,mode=max,scope=runner-${{ inputs.expansion }}

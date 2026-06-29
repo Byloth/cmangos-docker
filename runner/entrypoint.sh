@@ -43,7 +43,12 @@ function replace_conf()
     local REPLACE_WITH="${2}"
     local FILENAME="${3}"
 
-    sed -i "/^${SEARCH_FOR}/c\\${SEARCH_FOR} = ${REPLACE_WITH}" "${FILENAME}"
+    if grep -q "^${SEARCH_FOR}[[:space:]]*=" "${FILENAME}"
+    then
+        sed -i "s|^${SEARCH_FOR}[[:space:]]*=.*|${SEARCH_FOR} = ${REPLACE_WITH}|" "${FILENAME}"
+    else
+        echo "${SEARCH_FOR} = ${REPLACE_WITH}" >> "${FILENAME}"
+    fi
 }
 function merge_confs()
 {
@@ -54,7 +59,7 @@ function merge_confs()
     do
         PROPERTY="$(echo "${LINE}" | cut -d '#' -f 1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 
-        if [[ -n "${PROPERTY}" ]]
+        if [[ -n "${PROPERTY}" && "${PROPERTY}" == *"="* ]]
         then
             local SEARCH_FOR="$(echo "${PROPERTY}" | cut -d '=' -f 1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
             local REPLACE_WITH="$(echo "${PROPERTY}" | cut -d '=' -f 2- | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
