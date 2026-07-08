@@ -197,7 +197,7 @@ fi
 
 readonly COMMIT_SHA="$(git log -1 --format="%H")"
 readonly TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-readonly VERSION_CODE="1.0.0-develop+$(date -u +"%Y%m%d%H%M%S")"
+readonly VERSION_CODE="1.1.0-develop+$(date -u +"%Y%m%d%H%M%S")"
 
 if [[ "${TARGET}" == "builder" ]] || [[ "${TARGET}" == "all" ]]
 then

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 
-readonly SCRIPT_VERSION="1.0.0"
+readonly SCRIPT_VERSION="1.1.0"
 
 set -e
 
@@ -79,7 +79,7 @@ function extract_resources_from_client()
         echo -e "  $(warning "└") It seems that you've already extracted the resources from the client before."
         echo -e "    If you continue, existing resources will be overwritten by the new ones."
         echo ""
-        read -p "Are you sure to continue? [Y/n]: " ANSWER
+        read -p "Are you sure to continue? [y/N]: " ANSWER
 
         if [[ "${ANSWER}" != "y" ]] && [[ "${ANSWER}" != "Y" ]]
         then
@@ -136,7 +136,7 @@ function init_db()
                  echo -e "     this procedure will prune $(info "ALL") of your data and"
                  echo -e "     they will be lost $(info "FOREVER") (it's a very long time)!"
     echo ""
-    read -p "Are you sure to continue? [Y/n]: " ANSWER
+    read -p "Are you sure to continue? [y/N]: " ANSWER
 
     if [[ "${ANSWER}" != "y" ]] && [[ "${ANSWER}" != "Y" ]]
     then
@@ -353,7 +353,7 @@ Options:
                 echo -e "  $(warning "└") This procedure will prune all custom data you"
                 echo -e "     may have loaded into your \"$(info "${MANGOS_WORLD_DBNAME}")\" database."
                 echo ""
-                read -p "Are you sure to continue? [Y/n]: " ANSWER
+                read -p "Are you sure to continue? [y/N]: " ANSWER
 
                 if [[ "${ANSWER}" != "y" ]] && [[ "${ANSWER}" != "Y" ]]
                 then
