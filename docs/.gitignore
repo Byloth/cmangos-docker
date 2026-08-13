@@ -1,0 +1,4 @@
+# Generated & compiled files
+#
+/.vitepress/cache/
+/.vitepress/dist/

@@ -1,0 +1,5 @@
+{
+  "name": "@byloth/cmangos-docker",
+  "workspaces": ["docs"],
+  "private": true
+}
