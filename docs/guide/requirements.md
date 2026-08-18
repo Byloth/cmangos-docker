@@ -1,14 +1,15 @@
 # Requirements
 
 ::: warning Prerequisites
-All the contents of this guide assume a basic knowledge of your **operating system**, its **terminal**, and how to use its **command line interface**.
+All the contents of this guide assume a basic knowledge of your **operating system**, its **terminal** and how to use its **command line interface**.
 
 These topics won't be covered in this documentation; however, any other software or tools used will be described within the limited scope of their specific implementation.
 :::
 
 ## Docker
 
-[**Docker**](https://www.docker.com/) is the only software required to run this project.
+[**Docker**](https://www.docker.com/) is the only software required to run this project.  
+With it, also comes [**Docker Compose**](https://docs.docker.com/compose/) <small>(v2)</small>, so no extra steps are needed.
 
 ### Installation
 
@@ -47,7 +48,7 @@ To generate this message, Docker took the following steps:
 To try something more ambitious, you can run an Ubuntu container with:
  $ docker run -it ubuntu bash
 
-Share images, automate workflows, and more with a free Docker ID:
+Share images, automate workflows and more with a free Docker ID:
  https://hub.docker.com/
 
 For more examples and ideas, visit:
@@ -55,7 +56,8 @@ For more examples and ideas, visit:
 ```
 
 ::: tip Linux users
-If you're using a Linux-based operating system, you'll probably need to prepend `sudo` to each `docker` command you run. Due to the way Docker works in a Linux environment, it requires superuser privileges.
+If you're using a Linux-based operating system, you'll probably need to prepend `sudo` to each `docker` command you run.  
+Due to the way Docker works in a Linux environment, it requires superuser privileges.
 
 [Learn how to run Docker without sudo →](https://docs.docker.com/engine/install/linux-postinstall/)
 :::

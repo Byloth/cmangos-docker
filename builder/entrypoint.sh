@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 
-readonly SCRIPT_VERSION="1.1.0"
+readonly SCRIPT_VERSION="1.2.0"
 
 set -e
 
@@ -154,16 +154,14 @@ function init_db()
 function backup_db()
 {
     readonly HELP_MSG="
-Backups the specified database(s) and then returns the
- result as a single \"tar.gz\" file via standard output.
+Backups all databases — or only the specified one(s),
+ if any option is given — and then returns the result
+ as a single \"tar.gz\" file via standard output.
 
 Usage:
     backup-db [OPTIONS...]
 
 Options:
-    -a | --all
-        Backups all databases.
-
     -w | --world
         Backups the world database: \"$(info "${MANGOS_WORLD_DBNAME}")\".
 
@@ -185,9 +183,6 @@ Options:
     while [[ ${#} -gt 0 ]]
     do
         case "${1}" in
-            -a | --all)
-                readonly BACKUPS_ALL="true"
-                ;;
             -w | --world)
                 DATABASES+=(["world"]="${MANGOS_WORLD_DBNAME}")
                 ;;
@@ -219,34 +214,12 @@ Options:
         shift
     done
 
-    if [[ "${BACKUPS_ALL}" == "true" ]]
+    if [[ -z ${DATABASES[@]} ]]
     then
-        if [[ -n ${DATABASES[@]} ]]
-        then
-            echoerr ""
-            echoerr -e " $(error "ERROR!" --underline)"
-            echoerr -e "  $(error "└") You cannot specify both \"$(info "--all")\" and any other"
-            echoerr -e "     specific database options at the same time."
-            echoerr ""
-            echoerr " Run \"$(info "backup-db --help")\" for more information."
-
-            exit 2
-        fi
-
         DATABASES=(["world"]="${MANGOS_WORLD_DBNAME}" \
                    ["characters"]="${MANGOS_CHARACTERS_DBNAME}" \
                    ["logs"]="${MANGOS_LOGS_DBNAME}" \
                    ["realmd"]="${MANGOS_REALMD_DBNAME}")
-    fi
-    if [[ -z ${DATABASES[@]} ]]
-    then
-        echoerr ""
-        echoerr -e " $(error "ERROR!" --underline)"
-        echoerr -e "  $(error "└") You must specify at least one database to backup."
-        echoerr ""
-        echoerr " Run \"$(info "backup-db --help")\" for more information."
-
-        exit 3
     fi
 
     local TIMESTAMP="$(date +"%Y-%m-%d_%H-%M-%S")"

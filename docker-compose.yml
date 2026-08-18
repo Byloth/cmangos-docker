@@ -5,6 +5,13 @@ services:
     environment:
       MARIADB_ROOT_PASSWORD: "${MYSQL_SUPERPASS}"
 
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 30s
+      interval: 5s
+      timeout: 5s
+      retries: 6
+
     networks:
       - default
 
@@ -12,16 +19,50 @@ services:
       - mariadb_data:/var/lib/mysql
       - ./database:/etc/mysql/conf.d:ro
 
-  mangosd:
-    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:latest"
+  builder:
+    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}/builder:${CMANGOS_VERSION:-latest}"
+    profiles:
+      - builder
+
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
+
+    environment:
+      MYSQL_SUPERUSER: "root"
+      MYSQL_SUPERPASS: "${MYSQL_SUPERPASS}"
+      MANGOS_DBHOST: mariadb
+      MANGOS_DBUSER: "${MANGOS_DBUSER}"
+      MANGOS_DBPASS: "${MANGOS_DBPASS}"
+      TZ: "${WOW_TIMEZONE}"
+
+    stdin_open: true
+    tty: true
+    networks:
+      - default
+
+    volumes:
+      - cmangos_mangosd_data:/home/mangos/data
+      - "${WOW_CLIENT_DIR:-./wow-client}:/home/mangos/wow-client"
+
+  mangosd:
+    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:${CMANGOS_VERSION:-latest}"
+    depends_on:
+      mariadb:
+        condition: service_healthy
 
     environment:
       MANGOS_DBHOST: mariadb
       MANGOS_DBUSER: "${MANGOS_DBUSER}"
       MANGOS_DBPASS: "${MANGOS_DBPASS}"
       TZ: "${WOW_TIMEZONE}"
+
+    healthcheck:
+      test: ["CMD", "wait-for-it", "-q", "-t", "3", "-h", "localhost", "-p", "8085"]
+      start_period: 10m
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
     command: mangosd
     stdin_open: true
@@ -37,15 +78,23 @@ services:
       - ./runner/config:/opt/mangos/conf:ro
 
   realmd:
-    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:latest"
+    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:${CMANGOS_VERSION:-latest}"
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
 
     environment:
       MANGOS_DBHOST: mariadb
       MANGOS_DBUSER: "${MANGOS_DBUSER}"
       MANGOS_DBPASS: "${MANGOS_DBPASS}"
       TZ: "${WOW_TIMEZONE}"
+
+    healthcheck:
+      test: ["CMD", "wait-for-it", "-q", "-t", "3", "-h", "localhost", "-p", "3724"]
+      start_period: 30s
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
     command: realmd
     networks:
@@ -56,11 +105,13 @@ services:
 
     volumes:
       - cmangos_mangosd_data:/var/lib/mangos:ro
+      - ./runner/config:/opt/mangos/conf:ro
 
   phpmyadmin:
     image: phpmyadmin:5.2
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
 
     profiles:
       - debug
@@ -69,6 +120,13 @@ services:
       PMA_HOST: mariadb
       PMA_USER: root
       PMA_PASSWORD: "${MYSQL_SUPERPASS}"
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:80/"]
+      start_period: 15s
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
     networks:
       - default

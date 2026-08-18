@@ -7,7 +7,7 @@
  * Colors
  *
  * Each colors have exact same color scale system with 3 levels of solid
- * colors with different brightness, and 1 soft color.
+ * colors with different brightness and 1 soft color.
  *
  * - `XXX-1`: The most solid color used mainly for colored text. It must
  *   satisfy the contrast ratio against when used on top of `XXX-soft`.
@@ -39,7 +39,7 @@
  * - `warning`: Used to indicate warning to the users. Used in custom
  *   container, badges, etc.
  *
- * - `danger`: Used to show error, or dangerous message to the users. Used
+ * - `danger`: Used to show error or dangerous message to the users. Used
  *   in custom container, badges, etc.
  * -------------------------------------------------------------------------- */
 

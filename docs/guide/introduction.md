@@ -4,7 +4,8 @@
 
 **CMaNGOS Docker** is a project that aims to provide the **best possible experience** to anyone interested in running their own [**CMaNGOS**](https://cmangos.net/) server.
 
-It doesn't matter if you're a **non-technical newcomer** who just wants to play with friends, a **skilled developer** who wants to experiment with the game world, or an **enterprise** looking to deploy multiple realms on a distributed server cluster... CMaNGOS Docker will **make things easy** for all of you!
+It doesn't matter if you're a **non-technical newcomer** who just wants to play with friends, a **skilled developer** who wants to experiment with the game world or an **enterprise** looking to deploy multiple realms on a distributed server cluster...  
+CMaNGOS Docker will **make things easy** for all of you!
 
 ## How does it work?
 
@@ -16,7 +17,7 @@ The main task for the CMaNGOS Docker project is to **maintain** and **provide** 
 
 Once you've got [Docker installed](/guide/requirements#installation) on your machine, you're done and ready to go!
 
-If it's the first time running the server, you may need some [initial configuration](/guide/getting-started#preliminary-configuration) to tell CMaNGOS how you want it to run...  
+If it's the first time running the server, you may need some [initial configuration](/guide/getting-started#configure-the-environment) to tell CMaNGOS how you want it to run...  
 But even this step is simple and straightforward.
 
 ## Why use Docker?
@@ -25,7 +26,7 @@ There are several advantages to using Docker containers over the traditional tec
 While I won't cover them all (since that isn't the focus of this document), here are the ones that interest us the most:
 
 - **No further installations required:**
-  You won't need to install any additional software, compilers, or libraries.
+  You won't need to install any additional software, compilers or libraries.
 
 - **No wasted disk space:**
   Docker executables take up around **500–600 MB**, while a typical CMaNGOS Docker image is less than **200 MB**.

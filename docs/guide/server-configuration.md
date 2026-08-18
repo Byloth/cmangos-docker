@@ -4,7 +4,8 @@ This guide covers how to configure your CMaNGOS server, from basic settings like
 
 ## How configuration works
 
-CMaNGOS Docker uses a **configuration override** system. The container includes default configuration files, and you only need to specify the values you want to change.
+CMaNGOS Docker uses a **configuration override** system.  
+The container includes default configuration files and you only need to specify the values you want to change.
 
 Your custom settings go in files located in the `runner/config/` directory:
 
@@ -14,7 +15,8 @@ Your custom settings go in files located in the `runner/config/` directory:
 | `realmd.conf` | Login server settings (authentication, security) |
 
 ::: tip Override principle
-You don't need to copy the entire default configuration. Just add the specific properties you want to change. All other settings use CMaNGOS defaults.
+You don't need to copy the entire default configuration.  
+Just add the specific properties you want to change; all other settings use CMaNGOS defaults.
 :::
 
 ## World server configuration
@@ -188,7 +190,7 @@ See [Database Management — Querying databases](/guide/database-management#quer
 |-------|-------------|---------------|
 | `id` | Unique realm identifier | Usually `1` for single-realm setups |
 | `name` | Realm name shown in client | Any string |
-| `address` | Server IP address | `127.0.0.1` (local), LAN IP, or public IP |
+| `address` | Server IP address | `127.0.0.1` (local), LAN IP or public IP |
 | `port` | World server port | `8085` (default) |
 | `icon` | Realm type icon | `0`=Normal, `1`=PvP, `4`=Normal, `6`=RP, `8`=RP-PvP |
 | `realmflags` | Status flags | `0`=Online, `2`=Offline |
@@ -243,7 +245,8 @@ The setup process varies by router. Search for "port forwarding" + your router m
 
 #### Client stuck in realm selection loop
 
-This is the most common realm configuration issue. The client connects to the login server, sees the realm, but can't connect to the world server.
+This is the most common realm configuration issue.  
+The client connects to the login server, sees the realm, but can't connect to the world server.
 
 **Causes and solutions:**
 

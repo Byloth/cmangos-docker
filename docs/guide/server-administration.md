@@ -1,11 +1,11 @@
 # Server Administration
 
-This guide covers day-to-day server administration tasks: managing user accounts, assigning permissions, and using the server console.
+This guide covers day-to-day server administration tasks: managing user accounts, assigning permissions and using the server console.
 
 ## The CMaNGOS console
 
 The CMaNGOS server (`mangosd`) provides an interactive command-line interface for real-time server management.  
-Through this console, you can create accounts, modify player data, broadcast messages, and perform various administrative tasks.
+Through this console, you can create accounts, modify player data, broadcast messages and perform various administrative tasks.
 
 ### Accessing the console
 
@@ -40,7 +40,7 @@ The console supports hundreds of commands for server management. Here are the mo
 | Debug | `debug`, `log` | Troubleshooting |
 
 ::: tip Getting help
-Type `.help` in the console to see all available commands, or `.help <command>` for details about a specific command.
+Type `help` in the console to see all available commands or `help <command>` for details about a specific command.
 :::
 
 ## Creating accounts
@@ -76,7 +76,7 @@ To view information about an existing account:
 account {username}
 ```
 
-This displays the account ID, expansion level, GM level, and other details.
+This displays the account ID, expansion level, GM level and other details.
 
 ## Expansion access
 
@@ -92,7 +92,7 @@ This mimics official servers where players must purchase expansions separately.
 | `2` | Classic + TBC + Wrath of the Lich King | 80 |
 
 ::: info Cumulative access
-Higher levels include all previous content. Setting level `2` grants access to Classic, TBC, and WotLK content.
+Higher levels include all previous content. Setting level `2` grants access to Classic, TBC and WotLK content.
 :::
 
 ### Set expansion level
@@ -110,7 +110,7 @@ account set addon john 2    # Up to WotLK
 
 ## Game Master levels
 
-Game Masters (GMs) are privileged users who can perform administrative actions in-game, such as teleporting players, spawning items, or banning cheaters.
+Game Masters (GMs) are privileged users who can perform administrative actions in-game, such as teleporting players, spawning items or banning cheaters.
 
 ### GM permission levels
 

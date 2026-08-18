@@ -64,6 +64,12 @@ export default defineConfig({
           { text: 'Customization', link: '/guide/customization' },
           { text: 'Use in Production', link: '/guide/use-in-production' }
         ]
+      },
+      {
+        text: 'Architecture',
+        items: [
+          { text: 'Docker Volumes', link: '/guide/docker-volumes' }
+        ]
       }
     ],
 
