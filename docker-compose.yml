@@ -2,8 +2,22 @@ name: cmangos
 services:
   mariadb:
     image: mariadb:11.8
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "${MARIADB_CPUS_LIMIT:-0}"
+          memory: "${MARIADB_MEMORY_LIMIT:-2g}"
+
     environment:
       MARIADB_ROOT_PASSWORD: "${MYSQL_SUPERPASS}"
+
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 30s
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
     networks:
       - default
@@ -12,10 +26,43 @@ services:
       - mariadb_data:/var/lib/mysql
       - ./database:/etc/mysql/conf.d:ro
 
+  builder:
+    profiles:
+      - builder
+
+    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}/builder:latest"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+    environment:
+      MYSQL_SUPERUSER: root
+      MYSQL_SUPERPASS: "${MYSQL_SUPERPASS}"
+      MANGOS_DBHOST: mariadb
+      MANGOS_DBUSER: "${MANGOS_DBUSER}"
+      MANGOS_DBPASS: "${MANGOS_DBPASS}"
+
+    networks:
+      - default
+
+    volumes:
+      - mangosd_data:/home/mangos/data
+      - type: bind
+        source: "${WOW_CLIENT_DIR}"
+        target: /home/mangos/wow-client
+
   mangosd:
     image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:latest"
+    restart: unless-stopped
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
+
+    deploy:
+      resources:
+        limits:
+          cpus: "${MANGOSD_CPUS_LIMIT:-0}"
+          memory: "${MANGOSD_MEMORY_LIMIT:-8g}"
 
     environment:
       MANGOS_DBHOST: mariadb
@@ -24,8 +71,18 @@ services:
       TZ: "${WOW_TIMEZONE}"
 
     command: mangosd
+    stop_grace_period: 2m
+
+    healthcheck:
+      test: ["CMD", "bash", "-c", "</dev/tcp/127.0.0.1/8085"]
+      start_period: 10m
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
     stdin_open: true
     tty: true
+
     networks:
       - default
 
@@ -33,13 +90,21 @@ services:
       - "${MANGOSD_PORT:-8085}:8085"
 
     volumes:
-      - cmangos_mangosd_data:/var/lib/mangos:ro
+      - mangosd_data:/var/lib/mangos:ro
       - ./runner/config:/opt/mangos/conf:ro
 
   realmd:
     image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:latest"
+    restart: unless-stopped
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
+
+    deploy:
+      resources:
+        limits:
+          cpus: "${REALMD_CPUS_LIMIT:-0}"
+          memory: "${REALMD_MEMORY_LIMIT:-512m}"
 
     environment:
       MANGOS_DBHOST: mariadb
@@ -48,6 +113,13 @@ services:
       TZ: "${WOW_TIMEZONE}"
 
     command: realmd
+    healthcheck:
+      test: ["CMD", "bash", "-c", "</dev/tcp/127.0.0.1/3724"]
+      start_period: 30s
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
     networks:
       - default
 
@@ -55,15 +127,23 @@ services:
       - "${REALMD_PORT:-3724}:3724"
 
     volumes:
-      - cmangos_mangosd_data:/var/lib/mangos:ro
+      - mangosd_data:/var/lib/mangos:ro
 
   phpmyadmin:
-    image: phpmyadmin:5.2
-    depends_on:
-      - mariadb
-
     profiles:
       - debug
+
+    image: phpmyadmin:5.2
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+    deploy:
+      resources:
+        limits:
+          cpus: "${PHPMYADMIN_CPUS_LIMIT:-0}"
+          memory: "${PHPMYADMIN_MEMORY_LIMIT:-512m}"
 
     environment:
       PMA_HOST: mariadb
@@ -81,5 +161,4 @@ networks:
 
 volumes:
   mariadb_data:
-  cmangos_mangosd_data:
-    external: true
+  mangosd_data:

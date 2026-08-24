@@ -149,7 +149,7 @@ function init_db()
     echo ""
     echo -e " --------------------------------------"
 
-    ./InstallFullDB.sh -InstallAll "${MYSQL_SUPERUSER}" "${MYSQL_SUPERPASS}" DeleteAll
+    exec ./InstallFullDB.sh -InstallAll "${MYSQL_SUPERUSER}" "${MYSQL_SUPERPASS}" DeleteAll
 }
 function backup_db()
 {
@@ -274,7 +274,7 @@ function manage_db()
 {
     cd "${DATABASE_DIR}"
 
-    ./InstallFullDB.sh
+    exec ./InstallFullDB.sh
 }
 function restore_db()
 {

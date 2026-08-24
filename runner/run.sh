@@ -4,36 +4,21 @@
 set -e
 
 readonly BASE_DIR="$(realpath "$(dirname "${0}")/..")"
-source "${BASE_DIR}/.env"
-
-readonly NAME="cmangos-runner"
-readonly IMAGE="ghcr.io/byloth/cmangos/${WOW_VERSION}"
-readonly VERSION="latest"
-
-readonly CONFIG_DIR="${BASE_DIR}/runner/config"
-readonly DATA_VOLUME="cmangos_mangosd_data"
-readonly NETWORK="cmangos_default"
 
 if [[ -t 0 ]] && [[ -t 1 ]]
 then
-    readonly TTY="-it"
+    readonly TTY=""
 else
-    readonly TTY="-i"
+    readonly TTY="-T"
 fi
 
-docker run ${TTY} \
-           --name "${NAME}" \
-           --network "${NETWORK}" \
-           --rm \
-           -e MANGOS_DBHOST="mariadb" \
-           -e MANGOS_DBUSER="${MANGOS_DBUSER}" \
-           -e MANGOS_DBPASS="${MANGOS_DBPASS}" \
-           -p 3443:3443 \
-           -p 3724:3724 \
-           -p 7878:7878 \
-           -p 8085:8085 \
-           -p 8086:8086 \
-           -v "${CONFIG_DIR}":/opt/mangos/conf:ro \
-           -v "${DATA_VOLUME}":/var/lib/mangos:ro \
-    \
-    "${IMAGE}:${VERSION}" ${@}
+cd "${BASE_DIR}"
+
+case "${1:-mangosd}" in
+    mangosd | realmd)
+        exec docker compose run --rm ${TTY} --service-ports "${1}"
+        ;;
+    *)
+        exec docker compose run --rm ${TTY} mangosd "${@}"
+        ;;
+esac

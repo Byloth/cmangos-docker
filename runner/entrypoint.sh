@@ -161,13 +161,13 @@ function run_mangosd()
 {
     cd "${MANGOS_DIR}/bin"
 
-    gosu mangos ./mangosd
+    exec gosu mangos ./mangosd
 }
 function run_realmd()
 {
     cd "${MANGOS_DIR}/bin"
 
-    gosu mangos ./realmd
+    exec gosu mangos ./realmd
 }
 
 # Execution:

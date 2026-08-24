@@ -7,4 +7,4 @@ readonly PROJECT="cmangos"
 readonly SERVICE="mangosd"
 
 docker compose -p "${PROJECT}" up --detach
-docker attach "${PROJECT}-${SERVICE}-1"
+exec docker attach "${PROJECT}-${SERVICE}-1"
