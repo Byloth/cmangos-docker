@@ -1,0 +1,9 @@
+{
+  // Test files run under `bun test`, not Nitro — they don't need the Nuxt
+  // auto-import types, but they do need bun's module types.
+  "extends": "../.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "types": ["bun-types"]
+  },
+  "include": ["./*.test.ts", "../server/**/*.ts"]
+}
