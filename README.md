@@ -89,10 +89,10 @@
 
 <div align="center">
   <a href="https://www.star-history.com/?repos=Byloth%2Fcmangos-docker&type=date&legend=top-left">
-   <picture>
-     <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Byloth/cmangos-docker&type=date&theme=dark&legend=top-left&sealed_token=_VSROzbQKIF-cFOQbbOz8Urqcc6HMAlE-c2gZoJNRBxfIimRaFkCWMineR75lPhLldeB99LwmvfXKJoFkFa4TUJsTGZ7W3RXCLCMPxHH0s-kQrqwrw7Z85yDzbXMO1Bj4Op6kjl1w7tRYv0Cf6XM5djFk_qkQHM3Raz9Md-7zSICQ2-SkIOQ0KoIXKiN" />
-     <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Byloth/cmangos-docker&type=date&legend=top-left&sealed_token=_VSROzbQKIF-cFOQbbOz8Urqcc6HMAlE-c2gZoJNRBxfIimRaFkCWMineR75lPhLldeB99LwmvfXKJoFkFa4TUJsTGZ7W3RXCLCMPxHH0s-kQrqwrw7Z85yDzbXMO1Bj4Op6kjl1w7tRYv0Cf6XM5djFk_qkQHM3Raz9Md-7zSICQ2-SkIOQ0KoIXKiN" />
-     <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Byloth/cmangos-docker&type=date&legend=top-left&sealed_token=_VSROzbQKIF-cFOQbbOz8Urqcc6HMAlE-c2gZoJNRBxfIimRaFkCWMineR75lPhLldeB99LwmvfXKJoFkFa4TUJsTGZ7W3RXCLCMPxHH0s-kQrqwrw7Z85yDzbXMO1Bj4Op6kjl1w7tRYv0Cf6XM5djFk_qkQHM3Raz9Md-7zSICQ2-SkIOQ0KoIXKiN" />
-   </picture>
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Byloth/cmangos-docker&type=date&theme=dark&legend=top-left&sealed_token=S7xK1WGDFqP5mzZTWGDcnohg_zu0SuHG7JnpxFkEcEQTZlGwFG4LfESTE_IYdXFZmVba6gHet3quX8C-KZIcxL3wNhVgTPEOGFmI7jb_ahfMx6Tk196TAicLXQs0tklDYe4ouf2o8tCnr084lYZv3dv5N6JbCQwPBg3Z2pxTY3e_s0rzrFkG_DTh7bkV" />
+      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Byloth/cmangos-docker&type=date&legend=top-left&sealed_token=S7xK1WGDFqP5mzZTWGDcnohg_zu0SuHG7JnpxFkEcEQTZlGwFG4LfESTE_IYdXFZmVba6gHet3quX8C-KZIcxL3wNhVgTPEOGFmI7jb_ahfMx6Tk196TAicLXQs0tklDYe4ouf2o8tCnr084lYZv3dv5N6JbCQwPBg3Z2pxTY3e_s0rzrFkG_DTh7bkV" />
+      <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Byloth/cmangos-docker&type=date&legend=top-left&sealed_token=S7xK1WGDFqP5mzZTWGDcnohg_zu0SuHG7JnpxFkEcEQTZlGwFG4LfESTE_IYdXFZmVba6gHet3quX8C-KZIcxL3wNhVgTPEOGFmI7jb_ahfMx6Tk196TAicLXQs0tklDYe4ouf2o8tCnr084lYZv3dv5N6JbCQwPBg3Z2pxTY3e_s0rzrFkG_DTh7bkV" />
+    </picture>
   </a>
 </div>
