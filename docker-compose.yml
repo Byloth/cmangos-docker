@@ -30,7 +30,7 @@ services:
     profiles:
       - builder
 
-    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}/builder:latest"
+    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}/builder:${CMANGOS_VERSION:-latest}"
     depends_on:
       mariadb:
         condition: service_healthy
@@ -41,6 +41,7 @@ services:
       MANGOS_DBHOST: mariadb
       MANGOS_DBUSER: "${MANGOS_DBUSER}"
       MANGOS_DBPASS: "${MANGOS_DBPASS}"
+      TZ: "${WOW_TIMEZONE}"
 
     networks:
       - default
@@ -48,11 +49,13 @@ services:
     volumes:
       - mangosd_data:/home/mangos/data
       - type: bind
-        source: "${WOW_CLIENT_DIR}"
+        source: "${WOW_CLIENT_DIR:-./wow-client}"
         target: /home/mangos/wow-client
+        bind:
+          create_host_path: true
 
   mangosd:
-    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:latest"
+    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:${CMANGOS_VERSION:-latest}"
     restart: unless-stopped
     depends_on:
       mariadb:
@@ -94,7 +97,7 @@ services:
       - ./runner/config:/opt/mangos/conf:ro
 
   realmd:
-    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:latest"
+    image: "ghcr.io/byloth/cmangos/${WOW_VERSION}:${CMANGOS_VERSION:-latest}"
     restart: unless-stopped
     depends_on:
       mariadb:
@@ -128,6 +131,7 @@ services:
 
     volumes:
       - mangosd_data:/var/lib/mangos:ro
+      - ./runner/config:/opt/mangos/conf:ro
 
   phpmyadmin:
     profiles:
@@ -149,6 +153,13 @@ services:
       PMA_HOST: mariadb
       PMA_USER: root
       PMA_PASSWORD: "${MYSQL_SUPERPASS}"
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:80/"]
+      start_period: 15s
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
     networks:
       - default

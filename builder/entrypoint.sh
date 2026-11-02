@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 
-readonly SCRIPT_VERSION="1.1.0"
+readonly SCRIPT_VERSION="1.2.0"
 
 set -e
 
@@ -9,7 +9,7 @@ set -e
 #
 function echoerr()
 {
-    echo ${@} >&2
+    echo "${@}" >&2
 }
 
 function success()
@@ -41,7 +41,7 @@ function error()
 
 function mysql_execute()
 {
-    mariadb "-h${MANGOS_DBHOST}" "-P${MANGOS_DBPORT}" "-u${MYSQL_SUPERUSER}" "-p${MYSQL_SUPERPASS}" ${@}
+    mariadb "-h${MANGOS_DBHOST}" "-P${MANGOS_DBPORT}" "-u${MYSQL_SUPERUSER}" "-p${MYSQL_SUPERPASS}" "${@}"
 }
 function mysql_dump()
 {
@@ -70,6 +70,17 @@ function install_updates()
 #
 function extract_resources_from_client()
 {
+    if [[ ! -d "${HOME_DIR}/wow-client/Data" ]]
+    then
+        echoerr ""
+        echoerr -e " $(error "ERROR!" --underline)"
+        echoerr -e "  $(error "└") No \"$(info "Data")\" directory found in the mounted client folder."
+        echoerr -e "     \"$(info "WOW_CLIENT_DIR")\" must point to the World of Warcraft"
+        echoerr -e "     client folder (the one containing \"$(info "Data/")\")."
+
+        exit 1
+    fi
+
     cd "${VOLUME_DIR}"
 
     if [[ -f ".resext" ]] || [[ $(ls | grep -c -E "Cameras|dbc|maps|mmaps|vmaps") -gt 0 ]]
@@ -100,7 +111,7 @@ function extract_resources_from_client()
     cp * "${HOME_DIR}/wow-client/"
     cd "${HOME_DIR}/wow-client"
 
-    ./ExtractResources.sh ${@}
+    ./ExtractResources.sh "${@}"
 
     mv Cameras "${VOLUME_DIR}/Cameras"
     mv dbc "${VOLUME_DIR}/dbc"
@@ -156,13 +167,14 @@ function backup_db()
     readonly HELP_MSG="
 Backups the specified database(s) and then returns the
  result as a single \"tar.gz\" file via standard output.
+If no options are specified, all databases are backed up.
 
 Usage:
     backup-db [OPTIONS...]
 
 Options:
     -a | --all
-        Backups all databases.
+        Backups all databases (same as specifying no options).
 
     -w | --world
         Backups the world database: \"$(info "${MANGOS_WORLD_DBNAME}")\".
@@ -219,34 +231,23 @@ Options:
         shift
     done
 
-    if [[ "${BACKUPS_ALL}" == "true" ]]
+    if [[ "${BACKUPS_ALL}" == "true" ]] && [[ ${#DATABASES[@]} -gt 0 ]]
     then
-        if [[ -n ${DATABASES[@]} ]]
-        then
-            echoerr ""
-            echoerr -e " $(error "ERROR!" --underline)"
-            echoerr -e "  $(error "└") You cannot specify both \"$(info "--all")\" and any other"
-            echoerr -e "     specific database options at the same time."
-            echoerr ""
-            echoerr " Run \"$(info "backup-db --help")\" for more information."
+        echoerr ""
+        echoerr -e " $(error "ERROR!" --underline)"
+        echoerr -e "  $(error "└") You cannot specify both \"$(info "--all")\" and any other"
+        echoerr -e "     specific database options at the same time."
+        echoerr ""
+        echoerr " Run \"$(info "backup-db --help")\" for more information."
 
-            exit 2
-        fi
-
+        exit 2
+    fi
+    if [[ ${#DATABASES[@]} -eq 0 ]]
+    then
         DATABASES=(["world"]="${MANGOS_WORLD_DBNAME}" \
                    ["characters"]="${MANGOS_CHARACTERS_DBNAME}" \
                    ["logs"]="${MANGOS_LOGS_DBNAME}" \
                    ["realmd"]="${MANGOS_REALMD_DBNAME}")
-    fi
-    if [[ -z ${DATABASES[@]} ]]
-    then
-        echoerr ""
-        echoerr -e " $(error "ERROR!" --underline)"
-        echoerr -e "  $(error "└") You must specify at least one database to backup."
-        echoerr ""
-        echoerr " Run \"$(info "backup-db --help")\" for more information."
-
-        exit 3
     fi
 
     local TIMESTAMP="$(date +"%Y-%m-%d_%H-%M-%S")"
@@ -395,7 +396,7 @@ case "${1}" in
     extract)
         shift
 
-        extract_resources_from_client ${@}
+        extract_resources_from_client "${@}"
         ;;
     init-db)
         shift
@@ -405,12 +406,12 @@ case "${1}" in
     backup-db)
         shift
 
-        backup_db ${@}
+        backup_db "${@}"
         ;;
     restore-db)
         shift
 
-        restore_db ${@}
+        restore_db "${@}"
         ;;
     manage-db)
         shift
@@ -420,11 +421,11 @@ case "${1}" in
     update-db)
         shift
 
-        update_db ${@}
+        update_db "${@}"
         ;;
     *)
         cd "${HOME_DIR}"
 
-        exec ${@}
+        exec "${@}"
         ;;
 esac

@@ -7,7 +7,7 @@ set -e
 #
 function echoerr()
 {
-    echo ${@} >&2
+    echo "${@}" >&2
 }
 
 function success()
@@ -179,18 +179,18 @@ case "${1}" in
         shift
 
         wait_for_database
-        run_mangosd ${@}
+        run_mangosd "${@}"
         ;;
     realmd)
         shift
 
         wait_for_database
-        run_realmd ${@}
+        run_realmd "${@}"
         ;;
     *)
         cd "${HOME_DIR}"
 
-        exec ${@}
+        exec "${@}"
         ;;
 esac
 
