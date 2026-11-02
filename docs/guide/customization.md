@@ -37,15 +37,16 @@ That's why the shipped `aiplayerbot.conf` keeps random bots from logging in:
 AiPlayerbot.RandomBotAutologin = 0
 ```
 
-If you want to populate your server with roaming bots anyway, turn autologin on **together with** the mitigation used on the maintainer's production server — fewer bots, none logged in at startup and only a few logins at a time:
+It also ships the mitigation used on the maintainer's production server, so it's already in place the moment you turn random bots on — fewer bots, none logged in at startup and only a few logins at a time:
 
 ```ini
-AiPlayerbot.RandomBotAutologin = 1
 AiPlayerbot.MinRandomBots = 200
 AiPlayerbot.MaxRandomBots = 200
 AiPlayerbot.RandomBotLoginAtStartup = 0
 AiPlayerbot.RandomBotsMaxLoginsPerInterval = 5
 ```
+
+To populate your server with roaming bots, set `AiPlayerbot.RandomBotAutologin = 1` and keep those four lines as they are. If the server still crashes, set `AiPlayerbot.MinRandomBots` and `AiPlayerbot.MaxRandomBots` to `0`: random bots are off, while the bots you summon on demand keep working.
 ::::
 
 :::: warning Database requirement

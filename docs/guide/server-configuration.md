@@ -35,10 +35,10 @@ The files in `runner/config/` are not empty: out of the box, they set these valu
 
 | File | Settings |
 |------|----------|
-| `mangosd.conf` | `GameType = 0`, `RealmZone = 8`, `RabbitDay = 954547200`, `Motd = "Benvenuto su Azeroth!"` |
+| `mangosd.conf` | `GameType = 0`, `RealmZone = 8`, `RabbitDay = 954547200`, `Motd = "Welcome to Azeroth!"` |
 | `realmd.conf` | None (comments only) |
 | `ahbot.conf` | `AhBot.Enabled = 1`, `AuctionHouseBot.Seller.Enabled = 0`, `AuctionHouseBot.Buyer.Enabled = 0` |
-| `aiplayerbot.conf` | `AiPlayerbot.Enabled = 1`, `AiPlayerbot.RandomBotAutologin = 0` (read the [PlayerBots](/guide/customization#playerbots) warning before changing it) |
+| `aiplayerbot.conf` | `AiPlayerbot.Enabled = 1`, `AiPlayerbot.RandomBotAutologin = 0`, `AiPlayerbot.MinRandomBots = 200`, `AiPlayerbot.MaxRandomBots = 200`, `AiPlayerbot.RandomBotLoginAtStartup = 0`, `AiPlayerbot.RandomBotsMaxLoginsPerInterval = 5` (read the [PlayerBots](/guide/customization#playerbots) warning before changing it) |
 | `anticheat.conf` | `Enable = 0`, `Movement.SpeedHack.Enable = 0`, `Movement.BadFallReset.Enable = 0`, `Antispam.Enable = 0`, `Warden.Enable = 0` |
 
 Change or remove any of them like any other setting.
@@ -126,7 +126,7 @@ To give new characters 10 gold: `StartPlayerMoney = 100000`
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `Motd` | `"Benvenuto su Azeroth!"` (set by the shipped `mangosd.conf`) | Message of the Day shown on login |
+| `Motd` | `"Welcome to Azeroth!"` (set by the shipped `mangosd.conf`) | Message of the Day shown on login |
 
 **Example:**
 ```ini
