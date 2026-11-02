@@ -1,12 +1,13 @@
 # Getting Started
 
-One of the main goals of the **CMaNGOS Docker** project is **optimization**.
+One of the main goals of the **CMaNGOS Docker** project is **optimization**.  
 To achieve this, **two different types** of Docker images have been developed: one used for **maintenance** (larger) and one used for **execution** (smaller and optimized).
 
 With this principle in mind, we can now begin!
 
 ::: warning Not production-ready
-This procedure doesn't describe a _production-ready_ deployment and doesn't delve into security best practices. It's just a simple practical example of a basic CMaNGOS Docker configuration; be careful when using it directly in a production environment.
+This procedure doesn't describe a _production-ready_ deployment and doesn't delve into security best practices: it's just a simple practical example of a basic CMaNGOS Docker configuration.  
+Be careful when using it directly in a production environment!
 
 If you're looking for more specific guidance, see the [Use in Production](/guide/use-in-production) page.
 :::
@@ -29,7 +30,7 @@ Select the one you need and **keep it in mind** for the next steps:
 Create a new directory on your computer to store everything related to your WoW server.  
 It's best **NOT** to use the same directory as the game client — keep them separate from each other.
 
-Download the [`cmangos-docker.zip`](https://github.com/Byloth/cmangos-docker/archive/refs/heads/master.zip) archive, open it, and extract its contents into the newly created directory.
+Download the [`cmangos-docker.zip`](https://github.com/Byloth/cmangos-docker/archive/refs/heads/master.zip) archive, open it and extract its contents into the newly created directory.
 
 ::: tip Using Git
 If you're familiar with [Git](https://git-scm.com/), you can clone the repository directly instead of downloading the archive:
@@ -55,25 +56,63 @@ Once you find it, copy the full path — we'll need it in the next step.
 
 The `.env` file is a configuration file that customizes your WoW server setup.
 
-Since it contains sensitive information (like passwords), it cannot be included pre-configured. To create it, copy the `.env.example` file and rename it to `.env`, then edit it with any text editor.
+Since it contains sensitive information (like passwords), it cannot be included pre-configured; to create it, copy the `.env.example` file and rename it to `.env`, then edit it with any text editor.
 
 ### Environment variables
 
 | Variable | Description | Example |
 |----------|-------------|---------|
+| `THREADS` | Compile threads, only used by `cmangos-build.sh` if you build the images yourself | `4` |
 | `MYSQL_SUPERPASS` | Password for the MySQL `root` administrator account | `root00` |
 | `MANGOS_DBUSER` | Username for the application's database connection | `mangos` |
 | `MANGOS_DBPASS` | Password for the application's database connection | `mangos00` |
-| `WOW_CLIENT_DIR` | Full path to your WoW game installation | `D:\Games\WoW` |
-| `WOW_TIMEZONE` | Server timezone ([tz database format](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)) | `Europe/Rome` |
+| `WOW_CLIENT_DIR` | Full path to your WoW client folder — the one containing the `Data/` directory | `/mnt/c/Program Files/World of Warcraft/` |
+| `WOW_TIMEZONE` | Server timezone ([tz database format](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)) | `Europe/Amsterdam` |
 | `WOW_VERSION` | Expansion keyword from the table above | `tbc` |
+
+::: warning `WOW_CLIENT_DIR` must contain `Data/`
+Point `WOW_CLIENT_DIR` at the client folder itself, the one that contains the `Data/` directory — not at `Data/` or at a parent folder.  
+If `Data/` isn't there (or the variable is empty), the [extraction](#extract-game-data) stops with an error.
+
+The example path is a WSL one; use the path format of the system you run Docker from, e.g. `C:\Program Files\World of Warcraft` on Windows or `/home/me/World of Warcraft` on Linux.
+:::
+
+The `.env.example` file also contains a few **optional** variables, commented out; uncomment one only if you need to change its default:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `CMANGOS_VERSION` | `latest` | Image tag for the builder and runner images (e.g. a dated tag, see [Rollback](/guide/install-updates#rollback)) |
+| `REALMD_PORT` | `3724` | Host port of the login server |
+| `MANGOSD_PORT` | `8085` | Host port of the world server |
+| `PHPMYADMIN_PORT` | `8080` | Host port of phpMyAdmin; also accepts `ip:port`, e.g. `127.0.0.1:8080` |
+| `*_CPUS_LIMIT` / `*_MEMORY_LIMIT` | see [Use in Production](/guide/use-in-production#docker-resource-limits) | CPU and memory limits for each service |
 
 ::: danger Security notice
 Choose strong, unique passwords for `MYSQL_SUPERPASS` and `MANGOS_DBPASS`.  
 The example values (`root00`, `mangos00`) are **not secure** and should only be used for local testing.
 :::
 
+Need inspiration?  
+Generate a strong random password right here — it only uses characters that are safe to paste directly into your `.env` file:
+
+<PasswordGenerator />
+
 Once you're done, save the file and close your text editor.
+
+## Start the database
+
+Now it's time to start the database server for the first time:
+
+```sh
+docker compose up -d mariadb
+```
+
+Besides launching the database — which we'll need shortly to initialize it — this first `docker compose` command also creates automatically everything the stack needs to run.
+
+::: info No volumes to create
+Your databases, the extracted game data and your database backups are stored in [Docker volumes](/guide/docker-volumes): see them as virtual disks.  
+Docker Compose creates them automatically the first time a service needs them, so there's nothing to do by hand.
+:::
 
 ## Extract game data
 
@@ -82,92 +121,52 @@ Due to legal reasons and copyright policies, CMaNGOS cannot be distributed in a 
 These files are present within the WoW game client.  
 If you legally own the game, you can extract them using the CMaNGOS extraction tool.
 
+Open a terminal in your project directory and run:
+
 ::: code-group
 
-```sh [Linux / Unix / macOS]
+```sh [All platforms]
+docker compose run --rm builder extract
+```
+
+```sh [*nix shortcut]
 ./builder/run.sh extract
 ```
 
-```bat [Windows Command Prompt]
-docker run -it --rm ^
-           --volume "cmangos_mangosd_data:/home/mangos/data" ^
-           --volume "{path}:/home/mangos/wow-client" ^
-    ^
-    ghcr.io/byloth/cmangos/{version}/builder:latest extract
-```
-
-```powershell [Windows PowerShell]
-docker run -it --rm `
-           --volume "cmangos_mangosd_data:/home/mangos/data" `
-           --volume "{path}:/home/mangos/wow-client" `
-    `
-    ghcr.io/byloth/cmangos/{version}/builder:latest extract
-```
-
 :::
 
-::: warning Placeholders
-For Windows users: replace `{path}` with your WoW installation directory path and `{version}` with your chosen expansion keyword (`classic`, `tbc`, or `wotlk`).
+::: info Two flavors, same command
+Throughout this guide, every maintenance command is shown in two flavors:
+
+- **All platforms** — the `docker compose run` form; works identically on Windows, macOS and Linux.
+- **\*nix shortcut** — the `./builder/run.sh` wrapper script shipped with the repository; WSL, macOS and Linux only.
+
+They're equivalent, so pick the one you prefer.
 :::
 
 ::: info Extraction time
-This process extracts maps, textures, and other game data.  
+This process extracts maps, textures and other game data.  
 Depending on your hardware, it may take **30 minutes to several hours** to complete.
 :::
 
 ## Initialize the database
 
-The database stores all game world information: NPCs, items, quests, spells, and much more. This step creates the required databases and populates them with initial data.
+The database stores all game world information: NPCs, items, quests, spells and much more...  
+This step creates the required databases and populates them with initial data.
 
-Open a terminal in your project directory and start the database server:
-
-```sh
-docker compose up mariadb
-```
-
-This terminal will display log output. Leave it running and open a **second terminal** in the same directory.
-
-In the second terminal, initialize the databases:
+From your project directory, run:
 
 ::: code-group
 
-```sh [Linux / Unix / macOS]
+```sh [All platforms]
+docker compose run --rm builder init-db
+```
+
+```sh [*nix shortcut]
 ./builder/run.sh init-db
 ```
 
-```bat [Windows Command Prompt]
-docker run -it --rm ^
-           --env MYSQL_SUPERUSER="root" ^
-           --env MYSQL_SUPERPASS="root00" ^
-           --env MANGOS_DBHOST="mariadb" ^
-           --env MANGOS_DBUSER="mangos" ^
-           --env MANGOS_DBPASS="mangos00" ^
-           --network "cmangos_default" ^
-           --volume "cmangos_mangosd_data:/home/mangos/data" ^
-    ^
-    ghcr.io/byloth/cmangos/{version}/builder:latest init-db
-```
-
-```powershell [Windows PowerShell]
-docker run -it --rm `
-           --env MYSQL_SUPERUSER="root" `
-           --env MYSQL_SUPERPASS="root00" `
-           --env MANGOS_DBHOST="mariadb" `
-           --env MANGOS_DBUSER="mangos" `
-           --env MANGOS_DBPASS="mangos00" `
-           --network "cmangos_default" `
-           --volume "cmangos_mangosd_data:/home/mangos/data" `
-    `
-    ghcr.io/byloth/cmangos/{version}/builder:latest init-db
-```
-
 :::
-
-::: warning Placeholders
-For Windows users: replace `{version}` with the correct expansion keyword and update the environment variable values to match your `.env` file.
-:::
-
-Once initialization completes, return to the first terminal and press `Ctrl+C` to stop the database server.
 
 ## Start the server
 
@@ -179,7 +178,7 @@ From your project directory, run:
 docker compose up
 ```
 
-The terminal will display server logs. As long as messages are being printed, your server is running.
+The terminal will display server logs; as long as messages are being printed, your server is running.
 
 ::: tip Running in background
 To run the server in the background (detached mode), add the `-d` flag:
@@ -197,7 +196,13 @@ To play on your server, you need to configure the WoW client to connect to it.
 
 ### Edit realmlist.wtf
 
-Locate the `realmlist.wtf` file inside your WoW client's `Data` directory and open it with a text editor.
+Locate the `realmlist.wtf` file inside your WoW client folder and open it with a text editor:
+
+| Expansion | Location of `realmlist.wtf` |
+|-----------|-----------------------------|
+| `classic` | Client folder itself, next to `WoW.exe` |
+| `tbc` | `Data/<locale>/`, e.g. `Data/enUS/` |
+| `wotlk` | `Data/<locale>/`, e.g. `Data/enUS/` |
 
 Replace its contents with:
 
@@ -208,6 +213,9 @@ set realmlist 127.0.0.1
 ::: info Remote connections
 If you're connecting from a different computer on your network, replace `127.0.0.1` with the server machine's IP address.  
 For internet connections, you'll need to configure port forwarding on your router.
+
+That's not enough on its own: the server's `realmlist` table also has to point to an address the remote clients can reach — by default it says `127.0.0.1`, so remote clients get stuck in the realm selection.  
+See [Realm configuration](/guide/server-configuration#realm-configuration) to update it.
 :::
 
 ### Create an account
@@ -217,8 +225,8 @@ See the [Server Administration](/guide/server-administration) guide for instruct
 
 ## Stop the server
 
-To stop the server gracefully, press `Ctrl+C` in the terminal where it's running.  
-This may take a few seconds as the server saves data and disconnects players.
+To stop the server gracefully, press `Ctrl+C` in the terminal where `docker compose up` is running: Docker Compose stops all the containers.  
+This may take a while, as the world server gets up to two minutes to save data and disconnect players (with older runner images, it is killed at the end of that time instead).
 
 ::: tip Clean shutdown
 To ensure everything is properly stopped:

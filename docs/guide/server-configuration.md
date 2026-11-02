@@ -4,7 +4,8 @@ This guide covers how to configure your CMaNGOS server, from basic settings like
 
 ## How configuration works
 
-CMaNGOS Docker uses a **configuration override** system. The container includes default configuration files, and you only need to specify the values you want to change.
+CMaNGOS Docker uses a **configuration override** system.  
+The container includes default configuration files and you only need to specify the values you want to change.
 
 Your custom settings go in files located in the `runner/config/` directory:
 
@@ -12,10 +13,35 @@ Your custom settings go in files located in the `runner/config/` directory:
 |------|---------|
 | `mangosd.conf` | World server settings (gameplay, rates, features) |
 | `realmd.conf` | Login server settings (authentication, security) |
+| `ahbot.conf` | [Auction House Bot](/guide/customization#auction-house-bot) settings |
+| `aiplayerbot.conf` | [PlayerBots](/guide/customization#playerbots) settings |
+| `anticheat.conf` | [AntiCheat](/guide/customization#anticheat) settings |
+
+Every time a container starts, its entrypoint copies the default `<file>.dist` shipped in the image and applies each `Property = value` line of your file on top of it: the matching line is replaced, or the property is appended if the `.dist` file doesn't have it.
 
 ::: tip Override principle
-You don't need to copy the entire default configuration. Just add the specific properties you want to change. All other settings use CMaNGOS defaults.
+You don't need to copy the entire default configuration.  
+Just add the specific properties you want to change; all other settings keep the defaults of the `.dist` file.
 :::
+
+::: warning Every file needs its `.dist`
+`ahbot.conf`, `aiplayerbot.conf` and `anticheat.conf` are optional: if you delete one, the entrypoint simply skips it.  
+But a file in `runner/config/` must match a `.dist` file in the image: if the image has no `<file>.dist` for it, the container stops with an error.
+:::
+
+### What the shipped files set
+
+The files in `runner/config/` are not empty: out of the box, they set these values.
+
+| File | Settings |
+|------|----------|
+| `mangosd.conf` | `GameType = 0`, `RealmZone = 8`, `RabbitDay = 954547200`, `Motd = "Welcome to Azeroth!"` |
+| `realmd.conf` | None (comments only) |
+| `ahbot.conf` | `AhBot.Enabled = 1`, `AuctionHouseBot.Seller.Enabled = 0`, `AuctionHouseBot.Buyer.Enabled = 0` |
+| `aiplayerbot.conf` | `AiPlayerbot.Enabled = 1`, `AiPlayerbot.RandomBotAutologin = 0`, `AiPlayerbot.MinRandomBots = 200`, `AiPlayerbot.MaxRandomBots = 200`, `AiPlayerbot.RandomBotLoginAtStartup = 0`, `AiPlayerbot.RandomBotsMaxLoginsPerInterval = 5` (read the [PlayerBots](/guide/customization#playerbots) warning before changing it) |
+| `anticheat.conf` | `Enable = 0`, `Movement.SpeedHack.Enable = 0`, `Movement.BadFallReset.Enable = 0`, `Antispam.Enable = 0`, `Warden.Enable = 0` |
+
+Change or remove any of them like any other setting.
 
 ## World server configuration
 
@@ -43,7 +69,7 @@ Motd = "Welcome to my server!"
 | Property | Default | Description |
 |----------|---------|-------------|
 | `GameType` | `0` | Server type displayed in realm list |
-| `RealmZone` | `1` | Timezone/region for the realm |
+| `RealmZone` | `1` (the shipped `mangosd.conf` sets `8`) | Timezone/region for the realm |
 
 **GameType values:**
 - `0` — Normal (PvE)
@@ -100,7 +126,7 @@ To give new characters 10 gold: `StartPlayerMoney = 100000`
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `Motd` | (empty) | Message of the Day shown on login |
+| `Motd` | `"Welcome to Azeroth!"` (set by the shipped `mangosd.conf`) | Message of the Day shown on login |
 
 **Example:**
 ```ini
@@ -126,7 +152,7 @@ Edit `runner/config/realmd.conf` to customize authentication and security settin
 | `WrongPass.MaxCount` | `0` | Max failed login attempts (`0` = unlimited) |
 | `WrongPass.BanTime` | `600` | Ban duration in seconds after max failures |
 | `WrongPass.BanType` | `0` | `0` = Ban IP, `1` = Ban account |
-| `MaxPingTime` | `30` | Disconnect after this many minutes of inactivity |
+| `MaxPingTime` | `30` | Minutes between two pings to the database |
 
 **Example — Ban IP for 1 hour after 5 failed attempts:**
 ```ini
@@ -138,7 +164,7 @@ WrongPass.BanType = 0
 ## Realm configuration
 
 The realm configuration tells the game client where to connect and what type of server it is.  
-This information is stored in the `realmlist` table of the `realmd` database.
+This information is stored in the `realmlist` table of the `{expansion}realmd` database (e.g. `tbcrealmd`).
 
 ### Default configuration
 
@@ -167,15 +193,16 @@ First, ensure the database is running:
 docker compose up mariadb -d
 ```
 
-Then run these SQL queries to update the realm:
+Then update the default realm entry with these SQL queries:
 
 ```sql
--- Remove the default entry
-DELETE FROM realmlist WHERE id = 1;
+-- Select your realm database (replace "tbc" with your expansion keyword)
+USE tbcrealmd;
 
--- Insert your custom configuration
-INSERT INTO realmlist (id, name, address, port, icon, realmflags, timezone, allowedSecurityLevel)
-VALUES (1, 'My Server', '192.168.1.100', 8085, 1, 0, 1, 0);
+-- Update the default entry
+UPDATE realmlist
+SET name = 'My Server', address = '192.168.1.100', port = 8085
+WHERE id = 1;
 ```
 
 ::: tip Running queries
@@ -188,12 +215,17 @@ See [Database Management — Querying databases](/guide/database-management#quer
 |-------|-------------|---------------|
 | `id` | Unique realm identifier | Usually `1` for single-realm setups |
 | `name` | Realm name shown in client | Any string |
-| `address` | Server IP address | `127.0.0.1` (local), LAN IP, or public IP |
+| `address` | Server IP address | `127.0.0.1` (local), LAN IP or public IP |
 | `port` | World server port | `8085` (default) |
 | `icon` | Realm type icon | `0`=Normal, `1`=PvP, `4`=Normal, `6`=RP, `8`=RP-PvP |
 | `realmflags` | Status flags | `0`=Online, `2`=Offline |
-| `timezone` | Timezone category | `1`=US, `2`=Korea, `8`=English, etc. |
+| `timezone` | Timezone category | `1`=Development, `2`=United States, `6`=Korea, `8`=English, etc. |
 | `allowedSecurityLevel` | Minimum GM level to connect | `0`=Everyone, `1`+=Staff only |
+
+::: info `icon` and `timezone` follow `mangosd.conf`
+Every time it starts, mangosd overwrites `icon` and `timezone` of its realm with the [`GameType` and `RealmZone`](#server-type) values from `mangosd.conf` (the `timezone` values are the same as `RealmZone`'s).  
+To change them, edit those settings instead of the table.
+:::
 
 ### Common scenarios
 
@@ -202,8 +234,9 @@ See [Database Management — Querying databases](/guide/database-management#quer
 For playing on the same computer:
 
 ```sql
-INSERT INTO realmlist (id, name, address, port, icon, realmflags, timezone, allowedSecurityLevel)
-VALUES (1, 'Local Server', '127.0.0.1', 8085, 1, 0, 1, 0);
+UPDATE realmlist
+SET name = 'Local Server', address = '127.0.0.1', port = 8085
+WHERE id = 1;
 ```
 
 #### LAN play
@@ -211,8 +244,9 @@ VALUES (1, 'Local Server', '127.0.0.1', 8085, 1, 0, 1, 0);
 For playing with others on your local network, use your computer's LAN IP:
 
 ```sql
-INSERT INTO realmlist (id, name, address, port, icon, realmflags, timezone, allowedSecurityLevel)
-VALUES (1, 'LAN Server', '192.168.1.100', 8085, 1, 0, 1, 0);
+UPDATE realmlist
+SET name = 'LAN Server', address = '192.168.1.100', port = 8085
+WHERE id = 1;
 ```
 
 ::: tip Finding your LAN IP
@@ -227,8 +261,9 @@ Look for an address like `192.168.x.x` or `10.0.x.x`.
 For public internet access, use your public IP or domain name:
 
 ```sql
-INSERT INTO realmlist (id, name, address, port, icon, realmflags, timezone, allowedSecurityLevel)
-VALUES (1, 'My Public Server', 'wow.example.com', 8085, 1, 0, 1, 0);
+UPDATE realmlist
+SET name = 'My Public Server', address = 'wow.example.com', port = 8085
+WHERE id = 1;
 ```
 
 ::: warning Port forwarding required
@@ -239,11 +274,19 @@ For internet play, you must configure your router to forward these ports:
 The setup process varies by router. Search for "port forwarding" + your router model.
 :::
 
+::: info Custom ports
+If you changed the published ports with `REALMD_PORT` or `MANGOSD_PORT` in your `.env` file, forward those instead, and:
+
+- with a custom `MANGOSD_PORT`, set the same value in the `port` field of the `realmlist` table;
+- with a custom `REALMD_PORT`, add it to the client's `realmlist.wtf`, e.g. `set realmlist 192.168.1.100:3725`.
+:::
+
 ### Troubleshooting realm issues
 
 #### Client stuck in realm selection loop
 
-This is the most common realm configuration issue. The client connects to the login server, sees the realm, but can't connect to the world server.
+This is the most common realm configuration issue.  
+The client connects to the login server, sees the realm, but can't connect to the world server.
 
 **Causes and solutions:**
 
@@ -267,19 +310,14 @@ This is the most common realm configuration issue. The client connects to the lo
 
 ## Applying configuration changes
 
-After modifying configuration files:
+Configuration files are read at startup, so a restart is required for changes to take effect.  
+After modifying them, restart the two servers:
 
-1. **Stop the server:**
-   ```sh
-   docker compose down
-   ```
+```sh
+docker compose restart mangosd realmd
+```
 
-2. **Start the server:**
-   ```sh
-   docker compose up
-   ```
-
-Configuration files are read at startup, so a restart is required for changes to take effect.
+Each container rebuilds its configuration from your files every time it starts, so there's no need to recreate it.
 
 ::: tip Database changes
 Changes to the `realmlist` table take effect immediately — no server restart needed. Players may need to re-login to see updated realm information.

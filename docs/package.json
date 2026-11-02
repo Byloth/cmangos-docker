@@ -7,7 +7,7 @@
   },
   "devDependencies": {
     "vitepress": "^1.6.4",
-    "vue": "^3.5.26"
+    "vue": "^3.5.41"
   },
   "private": true
 }

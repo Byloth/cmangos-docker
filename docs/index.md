@@ -27,7 +27,7 @@ features:
     details: You don't need to install any <i>weird</i> (and heavy) software, compilers or libraries.
   - icon: 📦
     title: No wasted Space
-    details: Docker executables take up around <b>500~600MB</b>, while an our typical image is less than <b>200MB</b>.
+    details: Docker executables take up around <b>500~600MB</b>, while our typical image is less than <b>200MB</b>.
   - icon: ⏱️
     title: No wasted Time
     details: No compilation steps needed — just download and <b>run</b> with ease. <i>Batteries included!</i>
